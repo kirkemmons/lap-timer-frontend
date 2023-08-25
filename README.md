@@ -1,4 +1,4 @@
-# aretheywoke-frontend
+# Lap Timer Frontend
 
 ## Build Setup
 
@@ -19,51 +19,34 @@ $ yarn generate
 
 For detailed explanation on how things work, check out the [documentation](https://nuxtjs.org).
 
-## Special Directories
+## Project Description
 
-You can create the following extra directories, some of which have special behaviors. Only `pages` is required; you can delete them if you don't want to use their functionality.
+This project involved creating a dynamic web application using Nuxt and Vue, with a focus on building a stopwatch feature that allows users to track elapsed time and store lap times. The application includes a start/stop button and a lap button that creates a new lap and stores the previous lap in an array of laps.
 
-### `assets`
+Additionally, the project included the implementation of a sortable datatable that displays lap numbers and times, along with a v-sparkline that graphically represents lap times. To enable persistent data storage, localStorage was integrated to store lap times, and Vuex points were used to summarize and manipulate data.
 
-The assets directory contains your uncompiled assets such as Stylus or Sass files, images, or fonts.
+Overall, this project demonstrated proficiency in Nuxt, Vue, Vuex, and localStorage, along with an ability to create a responsive and dynamic user interface. The resulting web application is an efficient and effective tool for tracking elapsed time and storing lap times, making it a valuable addition to any web development portfolio.
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/assets).
+## Wireframe
 
-### `components`
+![lap_timer](https://i.imgur.com/KknPglN.png)
 
-The components directory contains your Vue.js components. Components make up the different parts of your page and can be reused and imported into your pages, layouts and even other components.
+## Dependencies Used
 
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/components).
+#### Front End
+  * Vue
+  * Nuxt.js
+  * Javascript
+  * CSS
+  * Vuetify
+  
+## Stretch Goals
 
-### `layouts`
-
-Layouts are a great help when you want to change the look and feel of your Nuxt app, whether you want to include a sidebar or have distinct layouts for mobile and desktop.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/layouts).
-
-
-### `pages`
-
-This directory contains your application views and routes. Nuxt will read all the `*.vue` files inside this directory and setup Vue Router automatically.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/get-started/routing).
-
-### `plugins`
-
-The plugins directory contains JavaScript plugins that you want to run before instantiating the root Vue.js Application. This is the place to add Vue plugins and to inject functions or constants. Every time you need to use `Vue.use()`, you should create a file in `plugins/` and add its path to plugins in `nuxt.config.js`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/plugins).
-
-### `static`
-
-This directory contains your static files. Each file inside this directory is mapped to `/`.
-
-Example: `/static/robots.txt` is mapped as `/robots.txt`.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/static).
-
-### `store`
-
-This directory contains your Vuex store files. Creating a file in this directory automatically activates Vuex.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/docs/2.x/directory-structure/store).
+  * Add a column to the datatable that compares it to the previous lap
+  * Add a "multi-timer" mode which allows you to track multiple cars at once
+  * Hookup feathers backend
+  * Crud laptimes
+  * Create sessions service
+  * Create cars service
+  * Create tracks service
+  * Create master datatable where you can filter laps by track and by car

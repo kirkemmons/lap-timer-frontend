@@ -90,11 +90,8 @@ export default {
   ],
 
   dayjs: {
-    defaultTimeZone: 'GMT',
     plugins: [
-      'utc',
-      'relativeTime',
-      'timezone'
+      'duration'
     ]
   },
 
