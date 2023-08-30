@@ -62,9 +62,13 @@
           template(#item.remove="{ item: lap }")
             v-btn(
               icon
+              elevation="12"
               @click="removeLap(lap)"
             )
-              v-icon mdi-delete
+              v-icon(
+                color="red"
+                size="large"
+              ) mdi-trash-can-outline
 
     v-row(
       justify="center"
@@ -168,7 +172,7 @@ export default {
     async createLap () {
       // This lap function first checks the value of the timerState variable. If the timerState is not running, the function immediately returns without executing the rest of the code.
       if (this.timerState !== 'running') {
-        // return
+        return
       }
 
       const lapEndTime = this.currentTimer // Store the current time as the end time of the lap
@@ -188,7 +192,7 @@ export default {
       console.log(lapTimeSeconds)
 
       const { Lap } = this.$FeathersVuex.api
-      const data = { time: lapTimeSeconds }
+      const data = { time: lapTimeSeconds, lapIndex: this.laps.length }
 
       console.log(Lap)
       const lap = new Lap(data)
@@ -198,9 +202,34 @@ export default {
       console.log(returnObj)
     },
 
+    async fetchLaps () {
+      try {
+        const { Lap } = this.$FeathersVuex.api
+
+        // Fetch the updated list of laps using the Feathers API
+        const laps = await Lap.find()
+        console.log(laps)
+      } catch (error) {
+        console.error('Error fetching laps:', error)
+      }
+    },
+
+    renumberLaps (lap) {
+      const removedLapIndex = this.laps.indexOf(lap)
+      if (removedLapIndex !== -1) {
+        for (let i = removedLapIndex + 1; i < this.laps.length; i++) {
+          this.laps[i].lapIndex -= 1
+        }
+      }
+    },
+
     async removeLap (lap) {
       console.log(lap)
       await lap.remove()
+
+      await this.fetchLaps()
+
+      this.renumberLaps()
     },
 
     // The stop function stops the timer by clearing the interval that was set with the setInterval function in the tick function and sets the timerState to 'paused'.
