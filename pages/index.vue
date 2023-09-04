@@ -59,6 +59,8 @@
           class="elevation-18"
           no-data-text="No laps have been recorded"
         )
+          template(#item.time="{ item: lap }")
+            span {{ $dayjs.duration(lap.time, 'milliseconds').format('mm:ss:sss') }}
           template(#item.remove="{ item: lap }")
             v-btn(
               icon
@@ -70,24 +72,24 @@
                 size="large"
               ) mdi-trash-can-outline
 
-    v-row(
-      justify="center"
-    )
-      v-col(
-        cols="9"
-        lg="6"
-      )
-        v-card.mt-4
-          //- v-sparkline(
-          //-   show-labels
-          //-   label-size="6"
-          //-   :value="lapTimes"
-          //-   :gradient="['#1feaea', '#f72047', '#ffd200']"
-          //-   line-width="3"
-          //-   auto-draw
-          //-   stroke-linecap="square"
-          //-   class="elevation-18"
-          //- )
+    //- v-row(
+    //-   justify="center"
+    //- )
+    //-   v-col(
+    //-     cols="9"
+    //-     lg="6"
+    //-   )
+    //-     v-card.mt-4
+    //-       v-sparkline(
+    //-         show-labels
+    //-         label-size="6"
+    //-         :value="lapTimes"
+    //-         :gradient="['#1feaea', '#f72047', '#ffd200']"
+    //-         line-width="3"
+    //-         auto-draw
+    //-         stroke-linecap="square"
+    //-         class="elevation-18"
+    //-       )
 
     v-row.mb-1(
     )
@@ -106,7 +108,6 @@
 </template>
 
 <script>
-import dayjs from 'dayjs'
 import {} from 'vuex'
 import { makeFindMixin } from 'feathers-vuex'
 
@@ -127,7 +128,8 @@ export default {
       timerState: 'stopped',
       currentTimer: 0,
       time: '00:00:00',
-      ticker: undefined
+      ticker: undefined,
+      latestLap: ''
     }
   },
 
@@ -141,6 +143,7 @@ export default {
 
   methods: {
     // The start function starts the timer by calling the tick function if it is not already running.
+
     start () {
       if (this.timerState !== 'running') {
         this.tick()
@@ -151,23 +154,16 @@ export default {
     // The tick function increments the currentTimer variable by 1 every 10 milliseconds and updates the time variable with the current time in the HH:mm:ss format using the formatTime function.
     tick () {
       this.ticker = setInterval(() => {
-        this.currentTimer++
+        this.currentTimer += 10
         this.time = this.formatTime(this.currentTimer)
       }, 10)
     },
 
     // The formatTime function takes the number of seconds passed as an argument and uses the dayjs library to create a new dayjs object representing the current time (measuredTime), adds the number of seconds passed to it and returns the resulting time in the HH:mm:ss format.
-    formatTime (seconds) {
-      const measuredTime = dayjs().startOf('day').add(seconds, 'second')
-      return measuredTime.format('HH:mm:ss')
+    formatTime (milliseconds) {
+      const measuredTime = this.$dayjs.duration(milliseconds, 'milliseconds')
+      return measuredTime.format('mm:ss:sss')
     },
-
-    // ...mapActions({
-    //   addLap: 'addLap',
-    //   addLapTime: 'addLapTime',
-    //   resetLap: 'resetLap',
-    //   resetLapTimes: 'resetLapTimes'
-    // }),
 
     async createLap () {
       // This lap function first checks the value of the timerState variable. If the timerState is not running, the function immediately returns without executing the rest of the code.
@@ -175,31 +171,22 @@ export default {
         return
       }
 
+      const lapStartTime = this.latestLap !== '' ? this.latestLap : 0
+      // console.log(lapStartTime)
       const lapEndTime = this.currentTimer // Store the current time as the end time of the lap
-      const lastLapIndex = this.laps.length - 1
-      let lapStartTime = 0
 
-      if (lastLapIndex >= 0) {
-        lapStartTime = this.laps[lastLapIndex].time // Use the end time of the last lap as the start time of the new lap
-      } else {
-        lapStartTime = 0 // Set the start time of the first lap to 0
-      }
+      const lapTimeDuration = (lapEndTime - lapStartTime)
 
-      const lapTimeSeconds = this.$dayjs
-        .duration(lapEndTime - lapStartTime, 'milliseconds')
-        .asSeconds()
-
-      console.log(lapTimeSeconds)
+      console.log(lapTimeDuration)
 
       const { Lap } = this.$FeathersVuex.api
-      const data = { time: lapTimeSeconds, lapIndex: this.laps.length }
+      const data = { time: lapTimeDuration }
 
-      console.log(Lap)
       const lap = new Lap(data)
 
-      const returnObj = await lap.create()
+      await lap.create()
 
-      console.log(returnObj)
+      this.latestLap = lapEndTime
     },
 
     async fetchLaps () {
@@ -214,22 +201,11 @@ export default {
       }
     },
 
-    renumberLaps (lap) {
-      const removedLapIndex = this.laps.indexOf(lap)
-      if (removedLapIndex !== -1) {
-        for (let i = removedLapIndex + 1; i < this.laps.length; i++) {
-          this.laps[i].lapIndex -= 1
-        }
-      }
-    },
-
     async removeLap (lap) {
-      console.log(lap)
+      // console.log(lap)
       await lap.remove()
 
       await this.fetchLaps()
-
-      this.renumberLaps()
     },
 
     // The stop function stops the timer by clearing the interval that was set with the setInterval function in the tick function and sets the timerState to 'paused'.
@@ -244,6 +220,7 @@ export default {
       this.timerState = 'stopped'
       this.time = '00:00:00'
       this.currentTimer = 0
+      this.latestLap = 0
 
       // Remove lap times from localStorage
       localStorage.removeItem('laps')
