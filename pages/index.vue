@@ -36,6 +36,7 @@ export default {
   mixins: [makeFindMixin({ service: 'laps', watch: true })],
   data () {
     return {
+    // An array of headers for a table or grid, used in a component's template.
       headers: [
         { text: 'Lap #', align: 'left', value: 'number' },
         { text: 'Lap Time', align: 'left', value: 'time' },
@@ -46,20 +47,23 @@ export default {
           sortable: false
         }
       ],
-      timerState: 'stopped',
-      time: '00:00:00:000',
-      ticker: undefined,
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
-      milliseconds: 0,
-      latestLap: 0,
-      totalElapsedTime: 0
+
+      // Timer-related properties:
+      timerState: 'stopped', // The state of the timer (e.g., 'stopped', 'running', 'paused').
+      time: '00:00:00:000', // The displayed time in HH:mm:ss:SSS format.
+      ticker: undefined, // A variable possibly used to store a timer interval ID.
+      hours: 0, // The hours component of the timer.
+      minutes: 0, // The minutes component of the timer.
+      seconds: 0, // The seconds component of the timer.
+      milliseconds: 0, // The milliseconds component of the timer.
+      latestLap: 0, // The timestamp of the latest lap recorded.
+      totalElapsedTime: 0 // The total elapsed time in milliseconds.
     }
   },
 
   computed: {
     lapsParams () {
+    // Return an object with a single property 'query' set to an empty object.
       return {
         query: {}
       }
@@ -96,90 +100,142 @@ export default {
       this.ticker = setInterval(this.tick, 10) // Call tick every 10 milliseconds
     },
 
+    // Define a function called formatLapTime that takes a 'time' parameter.
     formatLapTime (time) {
+      // Create a duration object using a library called 'dayjs'.
+      // It parses the 'time' value, which is in milliseconds, into a duration object.
       const lapDuration = this.$dayjs.duration(time, 'milliseconds')
+
+      // Format the duration object to a specific time format: HH:mm:ss:SSS
+      // 'HH' represents hours, 'mm' represents minutes, 'ss' represents seconds, and 'SSS' represents milliseconds.
+      // The result will be a formatted string representing the lap time.
       return lapDuration.format('HH:mm:ss:SSS')
     },
 
-    // The tick function increments the currentTimer variable by 1 every 10 milliseconds and updates the time variable with the current time in the HH:mm:ss format using the formatTime function.
+    // The tick function increments the timer by 10 milliseconds and updates the time display.
     tick () {
+      // Increment milliseconds by 10 milliseconds.
       this.milliseconds += 10
+
+      // Update seconds by adding the number of seconds represented by the extra milliseconds.
       this.seconds += Math.floor(this.milliseconds / 1000)
+
+      // Update minutes by adding the number of minutes represented by the extra seconds.
       this.minutes += Math.floor(this.seconds / 60)
+
+      // Update hours by adding the number of hours represented by the extra minutes.
       this.hours += Math.floor(this.minutes / 60)
 
+      // Ensure that each time component (milliseconds, seconds, minutes, hours) remains within its valid range.
+      // For example, reset seconds to 0 when it reaches 60.
       this.milliseconds %= 1000
       this.seconds %= 60
       this.minutes %= 60
       this.hours %= 24 // Optionally, reset hours after 24 hours
 
-      this.totalElapsedTime = this.hours * 60 * 60 * 1000 + this.minutes * 60 * 1000 + this.seconds * 1000 + this.milliseconds
+      // Calculate the total elapsed time in milliseconds.
+      this.totalElapsedTime =
+      this.hours * 60 * 60 * 1000 +
+      this.minutes * 60 * 1000 +
+      this.seconds * 1000 +
+      this.milliseconds
 
+      // Format the time components (hours, minutes, seconds, milliseconds) into a string in HH:mm:ss:SSS format.
       const h = String(this.hours).padStart(2, '0')
       const m = String(this.minutes).padStart(2, '0')
       const s = String(this.seconds).padStart(2, '0')
       const ms = String(this.milliseconds).padStart(3, '0')
 
+      // Set the 'time' property with the formatted time.
       this.time = `${h}:${m}:${s}:${ms}`
     },
 
     async createLap () {
-      // This lap function first checks the value of the timerState variable. If the timerState is not running, the function immediately returns without executing the rest of the code.
+      // Check the value of the 'timerState' variable.
+      // If the timer is not in the 'running' state, exit the function early.
       if (this.timerState !== 'running') {
-        return
+        return // Exit the function
       }
+
+      // Calculate the duration of the lap time by subtracting the latest lap time (if available) from the total elapsed time.
       const lapTimeDuration = this.totalElapsedTime - (this.latestLap || 0)
 
+      // Log the duration of the current lap time (for debugging purposes).
       console.log(lapTimeDuration)
 
+      // Assuming 'Lap' is a model from FeathersVuex API.
+      // Create a new 'Lap' object with the lap time duration as 'time'.
       const { Lap } = this.$FeathersVuex.api
       const data = { time: lapTimeDuration }
-
       const lap = new Lap(data)
 
+      // Use the 'create' method (presumably an asynchronous API call) to store the lap data.
       await lap.create()
 
+      // Update the 'latestLap' variable with the current total elapsed time.
+      // This will be used as a reference for the next lap calculation.
       this.latestLap = this.totalElapsedTime
     },
 
     async fetchLaps () {
       try {
+        // Destructure the 'Lap' object from the FeathersVuex API.
         const { Lap } = this.$FeathersVuex.api
-        // Fetch the updated list of laps using the Feathers API
+
+        // Use the 'find' method (presumably an asynchronous API call) to fetch the list of lap records.
         const laps = await Lap.find()
+
+        // Log the fetched lap records to the console.
         console.log(laps)
       } catch (error) {
+        // If an error occurs during the API request, handle the error and log it.
         console.error('Error fetching laps:', error)
       }
     },
 
     async removeLap (lap) {
-      // console.log(lap)
+      // Use the 'remove' method (presumably an asynchronous API call) to remove the specified lap record.
       await lap.remove()
+
+      // After successfully removing the lap record, call the 'fetchLaps' function to update the list of laps.
+      // This ensures that the list of laps is refreshed after removal.
       await this.fetchLaps()
     },
 
-    // The stop function stops the timer by clearing the interval that was set with the setInterval function in the tick function and sets the timerState to 'paused'.
     stop () {
-      clearInterval(this.ticker) // Clear the timer interval
-      this.timerState = 'paused' // Set the timer state to 'paused'
+      // Clear the timer interval by using clearInterval() and passing the interval ID (this.ticker).
+      // This effectively stops the timer from ticking or updating.
+      clearInterval(this.ticker)
+
+      // Set the timer state to 'paused' to indicate that the timer has been paused.
+      this.timerState = 'paused'
     },
 
-    // The reset function stops the timer by clearing the interval that was set with the setInterval function in the tick function, sets the timerState to 'stopped', resets the time to '00:00:00', sets the currentTimer to 0, and empties the laps array.
     reset () {
+      // Clear the timer interval by using window.clearInterval() and passing the interval ID (this.ticker).
+      // This stops the timer from ticking.
       window.clearInterval(this.ticker)
+
+      // Set the timer state to 'stopped' to indicate that the timer is no longer running.
       this.timerState = 'stopped'
+
+      // Reset the displayed time to '00:00:00:000'.
       this.time = '00:00:00:000'
-      this.hours = 0 // Reset hours to 0
-      this.minutes = 0 // Reset minutes to 0
-      this.seconds = 0 // Reset seconds to 0
+
+      // Reset individual time components to their initial values.
+      this.hours = 0
+      this.minutes = 0
+      this.seconds = 0
       this.milliseconds = 0
+
+      // Reset the latest lap time to 0.
       this.latestLap = 0
 
-      // Reset the totalElapsedTime to 0 when resetting the timer
+      // Reset the total elapsed time to 0 when resetting the timer.
       this.totalElapsedTime = 0
 
-      // Remove lap times from localStorage
+      // Remove any lap times stored in the local storage.
+      // This may be used to clear saved lap times.
       localStorage.removeItem('laps')
     }
   }

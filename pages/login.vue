@@ -65,3 +65,12 @@ export default {
 }
 
 </script>
+
+<style lang="scss">
+
+.container {
+  margin: 0 auto;
+  background-color: #e0d5d5;
+}
+
+</style>
