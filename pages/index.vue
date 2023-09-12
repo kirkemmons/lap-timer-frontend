@@ -18,7 +18,7 @@
               template(#item.time="{ item: lap }")
                 span {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }").blue--text
-                v-btn(icon elevation="12" @click="removeLap(lap)")
+                v-btn(icon @click="removeLap(lap)")
                   v-icon(color="red" size="large") mdi-trash-can-outline
         v-row.mb-1
           v-col.text-center
@@ -177,29 +177,12 @@ export default {
       this.latestLap = this.totalElapsedTime
     },
 
-    async fetchLaps () {
-      try {
-        // Destructure the 'Lap' object from the FeathersVuex API.
-        const { Lap } = this.$FeathersVuex.api
-
-        // Use the 'find' method (presumably an asynchronous API call) to fetch the list of lap records.
-        const laps = await Lap.find()
-
-        // Log the fetched lap records to the console.
-        console.log(laps)
-      } catch (error) {
-        // If an error occurs during the API request, handle the error and log it.
-        console.error('Error fetching laps:', error)
-      }
-    },
-
     async removeLap (lap) {
       // Use the 'remove' method (presumably an asynchronous API call) to remove the specified lap record.
       await lap.remove()
 
-      // After successfully removing the lap record, call the 'fetchLaps' function to update the list of laps.
-      // This ensures that the list of laps is refreshed after removal.
-      await this.fetchLaps()
+      // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
+      await this.findLaps(this.lapsLatestQuery)
     },
 
     stop () {
