@@ -5,18 +5,18 @@ import feathersClient, {
 
 const { discard } = require('feathers-hooks-common')
 
-class Lap extends BaseModel {
+class Session extends BaseModel {
   // Required for $FeathersVuex plugin to work after production transpile.
-  static modelName = 'Lap'
+  static modelName = 'Session'
 
   static setupInstance (data, { models }) {
     return data
   }
 }
 
-const servicePath = 'laps'
+const servicePath = 'sessions'
 const servicePlugin = makeServicePlugin({
-  Model: Lap,
+  Model: Session,
   service: feathersClient.service(servicePath),
   servicePath
 })
