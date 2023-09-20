@@ -19,11 +19,17 @@
 
 <script>
 
+import {} from 'vuex'
+
 export default {
   data () {
     return {
       sessionName: '' // Initialize sessionName as a data property
     }
+  },
+
+  computed: {
+
   },
 
   methods: {
@@ -37,12 +43,12 @@ export default {
         const session = new Session(data)
         console.log(session)
 
-        const sessionId = session._id
-        // Navigate to the laptime slug page for the created session
-        this.$router.push(`/sessions/${sessionId}`)
-
         // Use the 'create' method (presumably an asynchronous API call) to store the session data.
-        await session.create()
+        const createdSession = await session.create()
+        console.log(createdSession)
+
+        // Navigate to the laptime slug page for the created session
+        this.$router.push(`/sessions/${createdSession._id}`)
 
         console.log('Session created successfully!')
       } catch (error) {

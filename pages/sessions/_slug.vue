@@ -14,7 +14,7 @@
                   v-btn.orange--text(elevation="10" block @click="reset") Reset
         v-row(justify="center")
           v-col(cols="9" lg="6")
-            v-data-table.mt-4(:loading="isFindLapsPending" :headers="headers" :items="laps" class="elevation-18" no-data-text="No laps have been recorded")
+            v-data-table.mt-4(:loading="isFindLapsPending" :headers="headers" :items="laps.filter(lap => lap.sessionId === sessionId)" class="elevation-18" no-data-text="No laps have been recorded")
               template(#item.time="{ item: lap }")
                 span {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }").blue--text
@@ -30,10 +30,11 @@
 <script>
 
 import {} from 'vuex'
-import { makeFindMixin } from 'feathers-vuex'
+import { makeFindMixin, makeGetMixin } from 'feathers-vuex'
 
 export default {
-  mixins: [makeFindMixin({ service: 'laps', watch: true })],
+  mixins: [makeFindMixin({ service: 'laps', watch: true }), makeGetMixin({ service: 'sessions', watch: true })],
+
   data () {
     return {
     // An array of headers for a table or grid, used in a component's template.
@@ -65,8 +66,14 @@ export default {
     lapsParams () {
     // Return an object with a single property 'query' set to an empty object.
       return {
-        query: {}
+        query: {
+          sessionId: this.sessionId
+        }
       }
+    },
+    sessionId () {
+      console.log(this.$route.params)
+      return this.$route.params.slug
     }
   },
 
@@ -157,6 +164,10 @@ export default {
         return // Exit the function
       }
 
+      const sessionId = this.sessionId
+      // console.log(sessionId)
+      // console.log(this.sessionId)
+
       // Calculate the duration of the lap time by subtracting the latest lap time (if available) from the total elapsed time.
       const lapTimeDuration = this.totalElapsedTime - (this.latestLap || 0)
 
@@ -166,7 +177,7 @@ export default {
       // Assuming 'Lap' is a model from FeathersVuex API.
       // Create a new 'Lap' object with the lap time duration as 'time'.
       const { Lap } = this.$FeathersVuex.api
-      const data = { time: lapTimeDuration }
+      const data = { time: lapTimeDuration, sessionId }
       const lap = new Lap(data)
 
       // Use the 'create' method (presumably an asynchronous API call) to store the lap data.
