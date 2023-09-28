@@ -14,16 +14,22 @@
                   v-btn.orange--text(elevation="10" block @click="reset") Reset
         v-row(justify="center")
           v-col(cols="9" lg="6")
-            v-data-table.mt-4(:loading="isFindLapsPending" :headers="headers" :items="laps.filter(lap => lap.sessionId === sessionId)" class="elevation-18" no-data-text="No laps have been recorded")
+            v-data-table.mt-4(
+              :headers="headers"
+              :items="laps.filter(lap => lap.sessionId === sessionId)"
+              class="elevation-18"
+              no-data-text="No laps have been recorded"
+              )
               template(#item.time="{ item: lap }")
-                span {{ formatLapTime(lap.time) }}
-              template(#item.remove="{ item: lap }").blue--text
+                span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
+              template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="red" size="large") mdi-trash-can-outline
+
         v-row.mb-1
           v-col.text-center
-            v-btn.my-4(icon dark color="black" to="/")
-              v-icon.elevation-10(color="orange") mdi-crown-outline
+            v-btn.my-4(to="/sessions" icon)
+              v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
 
@@ -37,7 +43,7 @@ export default {
 
   data () {
     return {
-    // An array of headers for a table or grid, used in a component's template.
+      // An array of headers for a table or grid, used in a component's template.
       headers: [
         { text: 'Lap #', align: 'left', value: 'number' },
         { text: 'Lap Time', align: 'left', value: 'time' },
@@ -58,24 +64,36 @@ export default {
       seconds: 0, // The seconds component of the timer.
       milliseconds: 0, // The milliseconds component of the timer.
       latestLap: 0, // The timestamp of the latest lap recorded.
-      totalElapsedTime: 0 // The total elapsed time in milliseconds.
+      totalElapsedTime: 0, // The total elapsed time in milliseconds.
+      page: 1,
+      itemsPerPage: 10
     }
   },
 
   computed: {
+
     lapsParams () {
-    // Return an object with a single property 'query' set to an empty object.
+      // Return an object with a single property 'query' set to an empty object.
       return {
         query: {
           sessionId: this.sessionId
         }
       }
     },
+
     sessionId () {
       console.log(this.$route.params)
       return this.$route.params.slug
     }
   },
+
+  // watch: {
+  //   sessionId (newSessionId, oldSessionId) {
+  //     if (newSessionId !== oldSessionId) {
+  //       this.lapNumber = 1 // Reset lap number to 1 for a new session
+  //     }
+  //   }
+  // },
 
   methods: {
     // The `start` function begins or resumes the timer.
@@ -172,7 +190,7 @@ export default {
       const lapTimeDuration = this.totalElapsedTime - (this.latestLap || 0)
 
       // Log the duration of the current lap time (for debugging purposes).
-      console.log(lapTimeDuration)
+      // console.log(lapTimeDuration)
 
       // Assuming 'Lap' is a model from FeathersVuex API.
       // Create a new 'Lap' object with the lap time duration as 'time'.
@@ -186,14 +204,6 @@ export default {
       // Update the 'latestLap' variable with the current total elapsed time.
       // This will be used as a reference for the next lap calculation.
       this.latestLap = this.totalElapsedTime
-    },
-
-    async removeLap (lap) {
-      // Use the 'remove' method (presumably an asynchronous API call) to remove the specified lap record.
-      await lap.remove()
-
-      // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
-      await this.findLaps(this.lapsLatestQuery)
     },
 
     stop () {
@@ -231,6 +241,31 @@ export default {
       // Remove any lap times stored in the local storage.
       // This may be used to clear saved lap times.
       localStorage.removeItem('laps')
+    },
+
+    async removeLap (lap) {
+      // Use the 'remove' method (presumably an asynchronous API call) to remove the specified lap record.
+      await lap.remove()
+
+      // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
+      await this.findLaps(this.lapsLatestQuery)
+    },
+
+    getRowColor (item) {
+      if (item.time === undefined) {
+        return ''
+      }
+
+      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+
+      if (item.time === fastestLapTime) {
+        return 'green--text'
+      } else if (item.time === slowestLapTime) {
+        return 'red--text'
+      } else {
+        return ''
+      }
     }
   }
 }

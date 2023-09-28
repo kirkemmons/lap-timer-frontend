@@ -7,7 +7,7 @@ const { discard } = require('feathers-hooks-common')
 
 class Session extends BaseModel {
   // Required for $FeathersVuex plugin to work after production transpile.
-  static modelName = 'Session'
+  static modelName = 'Session';
 
   static setupInstance (data, { models }) {
     return data
