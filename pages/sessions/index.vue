@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app
+  v-app(style="background-color: #666666")
     v-main
       v-container.fluid.fill-height
         v-row(
@@ -28,9 +28,13 @@
                 :loading="isPending"
                 :headers="headers"
                 :items="sessions"
+                class="elevation-18"
                 no-data-text="No Sessions Found"
               )
                 template(#item.name="{ item: session }")
+                //- template(#item.laps="{ item: session }")
+                //-   span
+                //-     | {{ session.laps.length }} laps
 
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
@@ -49,17 +53,17 @@
 <script>
 
 import { } from 'vuex'
-import { makeFindMixin, makeGetMixin } from 'feathers-vuex'
+import { makeFindMixin } from 'feathers-vuex'
 
 export default {
-  mixins: [makeFindMixin({ service: 'sessions', watch: true }), makeGetMixin({ service: 'sessions', watch: true })],
+  mixins: [makeFindMixin({ service: 'sessions', watch: true })],
 
   data () {
     return {
       search: '',
       options: {
         page: 1,
-        itemsPerPage: 15,
+        itemsPerPage: 200,
         sortBy: ['name'],
         sortDesc: [false]
       },
@@ -73,7 +77,7 @@ export default {
     headers () {
       return [
         { text: 'Name', align: 'left', value: 'name' },
-        { text: '# of Laps', align: 'left', value: 'number' },
+        { text: '# of Laps', align: 'left', value: 'laps' },
         { text: 'Remove Session', align: 'right', value: 'remove', sortable: false }
       ]
     },
@@ -122,6 +126,7 @@ export default {
 
       // After successfully removing the session record, refresh the list of sessions by calling 'this.findSessions' with the latest query parameters.
       await this.findSessions(this.sessionsLatestQuery)
+      console.log(this.sessionsLatestQuery)
     }
   }
 }
@@ -132,7 +137,7 @@ export default {
 
 .container {
   margin: 0 auto;
-  background-color: #e0d5d5;
+  background-color: gray;
 }
 
 </style>

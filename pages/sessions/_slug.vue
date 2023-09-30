@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app
+  v-app(style="background-color: #666666")
     v-main
       v-container.fluid.fill-height
         v-row.mt-5(justify="center")
@@ -17,19 +17,23 @@
             v-data-table.mt-4(
               :headers="headers"
               :items="laps.filter(lap => lap.sessionId === sessionId)"
+              :items-per-page="itemsPerPage"
               class="elevation-18"
               no-data-text="No laps have been recorded"
-              )
+            )
               template(#item.time="{ item: lap }")
                 span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="red" size="large") mdi-trash-can-outline
+              template(v-slot:bottom)
+                span(class="text-center pt-2")
+                  v-pagination(v-model="page" :length="pageCount()")
 
-        v-row.mb-1
-          v-col.text-center
-            v-btn.my-4(to="/sessions" icon)
-              v-icon.elevation-10(color="orange") mdi-arrow-left
+            v-row.mt-5
+              v-col.text-center
+                v-btn.my-5(icon to="/sessions")
+                  v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
 
@@ -55,9 +59,18 @@ export default {
         }
       ],
 
+      // options: {
+      //   page: 1,
+      //   itemsPerPage: 100,
+      //   sortBy: ['name'],
+      //   sortDesc: [false]
+      // },
+      // isPending: false,
+      // paginationData: {},
+
       // Timer-related properties:
       timerState: 'stopped', // The state of the timer (e.g., 'stopped', 'running', 'paused').
-      time: '00:00:00:000', // The displayed time in HH:mm:ss:SSS format.
+      time: '00:00:000', // The displayed time in HH:mm:ss:SSS format.
       ticker: undefined, // A variable possibly used to store a timer interval ID.
       hours: 0, // The hours component of the timer.
       minutes: 0, // The minutes component of the timer.
@@ -65,26 +78,44 @@ export default {
       milliseconds: 0, // The milliseconds component of the timer.
       latestLap: 0, // The timestamp of the latest lap recorded.
       totalElapsedTime: 0, // The total elapsed time in milliseconds.
-      page: 1,
-      itemsPerPage: 10
+      itemsPerPage: 10,
+      page: 1
     }
   },
 
   computed: {
 
-    lapsParams () {
-      // Return an object with a single property 'query' set to an empty object.
-      return {
-        query: {
-          sessionId: this.sessionId
-        }
-      }
-    },
-
     sessionId () {
       console.log(this.$route.params)
       return this.$route.params.slug
+    },
+
+    // sortBy () {
+    //   const obj = {}
+    //   if (this.options.sortBy && this.options.sortBy.length) {
+    //     obj[this.options.sortBy[0]] = this.options.sortDesc[0] ? -1 : 1
+    //   }
+    //   return obj
+    // },
+
+    // limit () {
+    //   return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
+    // },
+
+    lapsParams () {
+      // Return an object with a single property 'query' set to an empty object.
+      const query = {
+        sessionId: this.sessionId
+        // $limit: this.limit,
+        // $skip: this.options.itemsPerPage * (this.options.page - 1),
+        // $sort: this.sortBy
+      }
+      return { query }
     }
+  },
+
+  pageCount () {
+    return Math.ceil(this.laps.length / this.itemsPerPage)
   },
 
   // watch: {
@@ -134,7 +165,7 @@ export default {
       // Format the duration object to a specific time format: HH:mm:ss:SSS
       // 'HH' represents hours, 'mm' represents minutes, 'ss' represents seconds, and 'SSS' represents milliseconds.
       // The result will be a formatted string representing the lap time.
-      return lapDuration.format('HH:mm:ss:SSS')
+      return lapDuration.format('mm:ss:SSS')
     },
 
     // The tick function increments the timer by 10 milliseconds and updates the time display.
@@ -156,23 +187,23 @@ export default {
       this.milliseconds %= 1000
       this.seconds %= 60
       this.minutes %= 60
-      this.hours %= 24 // Optionally, reset hours after 24 hours
+      // this.hours %= 24 // Optionally, reset hours after 24 hours
 
       // Calculate the total elapsed time in milliseconds.
       this.totalElapsedTime =
-      this.hours * 60 * 60 * 1000 +
+      // this.hours * 60 * 60 * 1000 +
       this.minutes * 60 * 1000 +
       this.seconds * 1000 +
       this.milliseconds
 
       // Format the time components (hours, minutes, seconds, milliseconds) into a string in HH:mm:ss:SSS format.
-      const h = String(this.hours).padStart(2, '0')
+      // const h = String(this.hours).padStart(2, '0')
       const m = String(this.minutes).padStart(2, '0')
       const s = String(this.seconds).padStart(2, '0')
       const ms = String(this.milliseconds).padStart(3, '0')
 
       // Set the 'time' property with the formatted time.
-      this.time = `${h}:${m}:${s}:${ms}`
+      this.time = `${m}:${s}:${ms}`
     },
 
     async createLap () {
@@ -224,10 +255,10 @@ export default {
       this.timerState = 'stopped'
 
       // Reset the displayed time to '00:00:00:000'.
-      this.time = '00:00:00:000'
+      this.time = '00:00:000'
 
       // Reset individual time components to their initial values.
-      this.hours = 0
+      // this.hours = 0
       this.minutes = 0
       this.seconds = 0
       this.milliseconds = 0
@@ -249,6 +280,8 @@ export default {
 
       // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
       await this.findLaps(this.lapsLatestQuery)
+      console.log(this.findLaps)
+      console.log(this.lapsLatestQuery)
     },
 
     getRowColor (item) {
@@ -276,7 +309,7 @@ export default {
 
 .container {
   margin: 0 auto;
-  background-color: #e0d5d5;
+  background-color: gray;
 }
 
 @media (min-width: 1020px) {

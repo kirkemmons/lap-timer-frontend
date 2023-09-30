@@ -1,20 +1,40 @@
 <template lang="pug">
-  v-app
+
+  v-app(style="background-color: #666666")
+    v-navigation-drawer(v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app style="background-color: #8c8c8c")
+      v-list
+        v-list-item(v-for="(item, i) in items" :key="i" :to="item.to" router exact)
+          v-list-item-action
+            v-icon.white--text {{ item.icon }}
+          v-list-item-content
+            v-list-item-title.white--text {{ item.title }}
+    v-app-bar(:clipped-left="clipped" fixed app style="background-color: #272727")
+      v-app-bar-nav-icon.ml-2.white--text(@click.stop="drawer = !drawer")
+      v-btn.mx-1(icon @click.stop="miniVariant = !miniVariant")
+        v-icon.white--text mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}
+      v-spacer
+      v-btn.mx-1(icon href="https://github.com/kirkemmons" target="_blank")
+        v-icon(color="orange") mdi-crown-outline
+
     v-main
       v-container.fluid.fill-height
         v-layout.align-center.justify-center
           h2 Start a New Session
             v-form(@submit.prevent="createSession")
               v-text-field(
+                color="orange"
                 v-model="sessionName"
                 label="Session Name"
                 required
               )
               v-btn(
-                color="blue"
+                color="orange"
                 type="submit"
                 :disabled="!sessionName"
               ) New Session
+
+      v-footer(style="background-color: #272727" app)
+        span.white--text &copy; #{new Date().getFullYear()}
 
 </template>
 
@@ -25,7 +45,25 @@ import { } from 'vuex'
 export default {
   data () {
     return {
-      sessionName: ''
+      sessionName: '',
+      clipped: false,
+      drawer: false,
+      fixed: false,
+      items: [
+        {
+          icon: 'mdi-clock',
+          title: 'Lap Timer',
+          to: '/'
+        },
+        {
+          icon: 'mdi-timelapse',
+          title: 'Sessions',
+          to: '/sessions'
+        }
+      ],
+      miniVariant: false,
+      right: true
+
     }
   },
 
@@ -71,8 +109,8 @@ export default {
 <style lang="scss">
 
 .container {
-  margin: 0 auto;
-  background-color: #e0d5d5;
+  background-color: #8c8c8c;
+  max-height: fit-content;
 }
 
 </style>
