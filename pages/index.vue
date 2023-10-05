@@ -19,33 +19,45 @@
     v-main
       v-container.fluid.fill-height
         v-layout.align-center.justify-center
-          h2 Start a New Session
-            v-form(@submit.prevent="createSession")
-              v-text-field(
-                color="orange"
-                v-model="sessionName"
-                label="Session Name"
-                required
-              )
-              v-btn(
-                color="orange"
-                type="submit"
-                :disabled="!sessionName"
-              ) New Session
+          .text-center.pa-5(
+            outlined
+            color="grey"
+            style="border: 2px dashed #ccc; width: 500px;"
+          )
+            .text-h6.mb-4 Start a New Session
+            v-btn.mb-6(
+              depressed
+              color="primary"
+              @click="isAddSessionOpen = true"
+              width="220"
+            )
+              v-icon(left) mdi-plus
+              | Add Session
+
+        AddSession(
+          v-if="isAddSessionOpen"
+          @input="isAddSessionOpen = false"
+          @session-created="handleSessionCreated"
+          :value="isAddSessionOpen"
+        )
 
       v-footer(style="background-color: #272727" app)
-        span.white--text &copy; #{new Date().getFullYear()}
+        span(class).white--text &copy; #{new Date().getFullYear()}
 
 </template>
 
 <script>
 
 import { } from 'vuex'
+import AddSession from '../components/AddSession.vue'
 
 export default {
+  components: {
+    AddSession
+  },
   data () {
     return {
-      sessionName: '',
+      isAddSessionOpen: false,
       clipped: false,
       drawer: false,
       fixed: false,
@@ -73,34 +85,39 @@ export default {
 
   methods: {
 
-    async createSession () {
-      try {
-        if (!this.sessionName) {
-          alert('Please enter a session name.')
-          return
-        }
-        // Assuming 'sessions' is the service for creating sessions
-        const { Session } = this.$FeathersVuex.api
-        console.log(Session)
-        const data = { name: this.sessionName }
-        console.log(data)
-        // console.log('Creating a new session with name:', this.sessionName)
-        // console.log(data)
-        const session = new Session(data)
-        // console.log(session)
-
-        // Use the 'create' method (presumably an asynchronous API call) to store the session data.
-        const createdSession = await session.create()
-        // console.log(createdSession)
-
-        // Navigate to the laptime slug page for the created session
-        this.$router.push(`/sessions/${createdSession._id}`)
-
-        // console.log('Session created successfully!')
-      } catch (error) {
-        console.error('Error creating session:', error)
-      }
+    handleSessionCreated (session) {
+    // Handle the created session, if needed
+      console.log('New session created:', session)
     }
+
+    // async createSession () {
+    //   try {
+    //     if (!this.sessionName) {
+    //       alert('Please enter a session name.')
+    //       return
+    //     }
+    //     // Assuming 'sessions' is the service for creating sessions
+    //     const { Session } = this.$FeathersVuex.api
+    //     console.log(Session)
+    //     const data = { name: this.sessionName }
+    //     console.log(data)
+    //     console.log('Creating a new session with name:', this.sessionName)
+    //     console.log(data)
+    //     const session = new Session(data)
+    //     console.log(session)
+
+    //     // Use the 'create' method (presumably an asynchronous API call) to store the session data.
+    //     const createdSession = await session.create()
+    //     console.log(createdSession)
+
+    //     // Navigate to the laptime slug page for the created session
+    //     this.$router.push(`/sessions/${createdSession._id}`)
+
+    //     // console.log('Session created successfully!')
+    //   } catch (error) {
+    //     console.error('Error creating session:', error)
+    //   }
+    // }
   }
 }
 

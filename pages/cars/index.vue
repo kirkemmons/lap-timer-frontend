@@ -27,21 +27,18 @@
               v-data-table.clickable(
                 :loading="isPending"
                 :headers="headers"
-                :items="sessions"
+                :items="cars"
                 class="elevation-18"
-                no-data-text="No Sessions Found"
+                no-data-text="No Cars Found"
               )
-                template(#item.name="{ item: session }")
-                //- template(#item.laps="{ item: session }")
-                //-   span
-                //-     | {{ session.laps.length }} laps
+                template(#item.name="{ item: car }")
 
-                template(#item.remove="{ item: session }")
-                  v-btn(icon @click="removeSession(session)")
+                template(#item.remove="{ item: car }")
+                  v-btn(icon @click="removeCar(car)")
                     v-icon(color="red" size="large") mdi-trash-can-outline
 
-                template(v-slot:item.name="{ item: session }")
-                  nuxt-link(:to="`/sessions/${session._id}`") {{ session.name }}
+                template(v-slot:item.name="{ item: car }")
+                  nuxt-link(:to="`/cars/${car._id}`") {{ car.name }}
 
             v-row.mt-1
               v-col.text-center
@@ -56,7 +53,7 @@ import { } from 'vuex'
 import { makeFindMixin } from 'feathers-vuex'
 
 export default {
-  mixins: [makeFindMixin({ service: 'sessions', watch: true })],
+  mixins: [makeFindMixin({ service: 'cars', watch: true })],
 
   data () {
     return {
@@ -76,13 +73,13 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Name', align: 'left', value: 'sessionName' },
+        { text: 'Name', align: 'left', value: 'name' },
         { text: '# of Laps', align: 'left', value: 'laps' },
-        { text: 'Remove Session', align: 'right', value: 'remove', sortable: false }
+        { text: 'Remove Car', align: 'right', value: 'remove', sortable: false }
       ]
     },
 
-    sessionId () {
+    carId () {
       console.log(this.$route.params)
       return this.$route.params.slug
     },
@@ -99,9 +96,9 @@ export default {
       return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
     },
 
-    sessionsParams () {
+    carsParams () {
       const query = {
-        sessionId: this.sessionId,
+        carId: this.carId,
         $limit: this.limit,
         $skip: this.options.itemsPerPage * (this.options.page - 1),
         $sort: this.sortBy
@@ -120,13 +117,13 @@ export default {
 
   methods: {
 
-    async removeSession (session) {
-    // Use the 'remove' method (presumably an asynchronous API call) to remove the specified session record.
-      await session.remove()
+    async removeCar (car) {
+    // Use the 'remove' method (presumably an asynchronous API call) to remove the specified car record.
+      await car.remove()
 
-      // After successfully removing the session record, refresh the list of sessions by calling 'this.findSessions' with the latest query parameters.
-      await this.findSessions(this.sessionsLatestQuery)
-      console.log(this.sessionsLatestQuery)
+      // After successfully removing the car record, refresh the list of cars by calling 'this.findSessions' with the latest query parameters.
+      await this.findCars(this.carsLatestQuery)
+      console.log(this.carsLatestQuery)
     }
   }
 }
