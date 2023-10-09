@@ -48,11 +48,16 @@ Overall, this project demonstrates proficiency in Nuxt.js, Vue, FeathersVuex, lo
 #### Front End
   * Vue
   * Nuxt.js
-  * FeatherVuex
+  * FeathersVuex
   * Javascript
   * CSS
   * Vuetify
-  * Feathers.js (backend)
+
+#### Back End
+  * Feathers.js
+
+#### Database
+  * MongoDB
   
 ## Stretch Goals
   * Create a cars service
