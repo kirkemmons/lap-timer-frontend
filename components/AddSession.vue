@@ -19,7 +19,7 @@
               v-text-field(
                 filled
                 label="Session Name"
-                v-model="clone.sessionName"
+                v-model="clone.name"
                 :rules="[rules.required, rules.max(100)]"
                 counter="100"
               )
@@ -59,19 +59,19 @@ export default {
   },
   data () {
     return {
-      sessionName: ''
+      name: ''
     }
   },
   computed: {
 
     item () {
       const { Session } = this.$FeathersVuex.api
-      return new Session({ sessionName: this.sessionName })
+      return new Session({ name: this.name })
     }
   },
   methods: {
     isValid (session) {
-      return session.sessionName && this.valid
+      return session.name && this.valid
     },
 
     async saveSession (clone, reset) {

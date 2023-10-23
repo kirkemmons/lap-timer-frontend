@@ -19,6 +19,44 @@
     v-main
       v-container.fluid.fill-height
         v-layout.align-center.justify-center
+          //- v-row.justify-center
+          //-   v-col(
+          //-     cols="12"
+          //-     md="6"
+          //-   )
+          //-     h2 Start a New Session
+          //-       v-form(@submit.prevent="createSession")
+          //-         v-text-field(
+          //-           color="orange"
+          //-           v-model="sessionName"
+          //-           label="Session Name"
+          //-           required
+          //-         )
+          //-         v-btn(
+          //-           color="orange"
+          //-           type="submit"
+          //-           :disabled="!sessionName"
+          //-         ) New Session
+
+          //- v-row.justify-center
+          //-   v-col(
+          //-     cols="12"
+          //-     md="6"
+          //-   )
+          //-     h2 Create a new Car
+          //-       v-form(@submit.prevent="createCar")
+          //-         v-text-field(
+          //-           color="blue"
+          //-           v-model="carName"
+          //-           label="Car Name"
+          //-           required
+          //-         )
+          //-         v-btn(
+          //-           color="blue"
+          //-           type="submit"
+          //-           :disabled="!carName"
+          //-         ) New Car
+
           .text-center.pa-5(
             outlined
             color="grey"
@@ -57,6 +95,8 @@ export default {
   },
   data () {
     return {
+      sessionName: '',
+      carName: '',
       isAddSessionOpen: false,
       clipped: false,
       drawer: false,
@@ -88,36 +128,65 @@ export default {
     handleSessionCreated (session) {
     // Handle the created session, if needed
       console.log('New session created:', session)
+    },
+
+    async createSession () {
+      try {
+        if (!this.sessionName) {
+          alert('Please enter a session name.')
+          return
+        }
+        // Assuming 'sessions' is the service for creating sessions
+        const { Session } = this.$FeathersVuex.api
+        console.log(Session)
+        const data = { name: this.sessionName }
+        console.log(data)
+        console.log('Creating a new session with name:', this.sessionName)
+        console.log(data)
+        const session = new Session(data)
+        console.log(session)
+
+        // Use the 'create' method (presumably an asynchronous API call) to store the session data.
+        const createdSession = await session.create()
+        console.log(createdSession)
+
+        // Navigate to the laptime slug page for the created session
+        this.$router.push(`/sessions/${createdSession._id}`)
+
+        // console.log('Session created successfully!')
+      } catch (error) {
+        console.error('Error creating session:', error)
+      }
+    },
+
+    async createCar () {
+      try {
+        if (!this.carName) {
+          alert('Please enter a car name.')
+          return
+        }
+        // Assuming 'cars' is the service for creating cars
+        const { Car } = this.$FeathersVuex.api
+        console.log(Car)
+        const data = { name: this.carName }
+        console.log(data)
+        console.log('Creating a new car with name:', this.carName)
+        console.log(data)
+        const car = new Car(data)
+        console.log(car)
+
+        // Use the 'create' method (presumably an asynchronous API call) to store the car data.
+        const createdCar = await car.create()
+        console.log(createdCar)
+
+        // Navigate to the laptime slug page for the created car
+        this.$router.push(`/cars/${createdCar._id}`)
+
+        // console.log('Session created successfully!')
+      } catch (error) {
+        console.error('Error creating car:', error)
+      }
     }
-
-    // async createSession () {
-    //   try {
-    //     if (!this.sessionName) {
-    //       alert('Please enter a session name.')
-    //       return
-    //     }
-    //     // Assuming 'sessions' is the service for creating sessions
-    //     const { Session } = this.$FeathersVuex.api
-    //     console.log(Session)
-    //     const data = { name: this.sessionName }
-    //     console.log(data)
-    //     console.log('Creating a new session with name:', this.sessionName)
-    //     console.log(data)
-    //     const session = new Session(data)
-    //     console.log(session)
-
-    //     // Use the 'create' method (presumably an asynchronous API call) to store the session data.
-    //     const createdSession = await session.create()
-    //     console.log(createdSession)
-
-    //     // Navigate to the laptime slug page for the created session
-    //     this.$router.push(`/sessions/${createdSession._id}`)
-
-    //     // console.log('Session created successfully!')
-    //   } catch (error) {
-    //     console.error('Error creating session:', error)
-    //   }
-    // }
   }
 }
 

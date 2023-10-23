@@ -290,8 +290,8 @@ export default {
         return ''
       }
 
-      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.carId === this.carId).map(lap => lap.time))
+      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.carId === this.carId).map(lap => lap.time))
 
       if (item.time === fastestLapTime) {
         return 'green--text'

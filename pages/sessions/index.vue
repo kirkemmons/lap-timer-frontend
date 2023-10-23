@@ -76,7 +76,7 @@ export default {
   computed: {
     headers () {
       return [
-        { text: 'Name', align: 'left', value: 'sessionName' },
+        { text: 'Name', align: 'left', value: 'name' },
         { text: '# of Laps', align: 'left', value: 'laps' },
         { text: 'Remove Session', align: 'right', value: 'remove', sortable: false }
       ]
