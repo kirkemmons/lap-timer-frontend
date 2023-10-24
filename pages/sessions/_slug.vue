@@ -22,13 +22,10 @@
               no-data-text="No laps have been recorded"
             )
               template(#item.time="{ item: lap }")
-                span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
+                span {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="red" size="large") mdi-trash-can-outline
-              template(v-slot:bottom)
-                span(class="text-center pt-2")
-                  v-pagination(v-model="page" :length="pageCount()")
 
             v-row.mt-5
               v-col.text-center
@@ -59,14 +56,12 @@ export default {
         }
       ],
 
-      // options: {
-      //   page: 1,
-      //   itemsPerPage: 100,
-      //   sortBy: ['name'],
-      //   sortDesc: [false]
-      // },
-      // isPending: false,
-      // paginationData: {},
+      options: {
+        page: 1,
+        itemsPerPage: 100,
+        sortBy: ['name'],
+        sortDesc: [false]
+      },
 
       // Timer-related properties:
       timerState: 'stopped', // The state of the timer (e.g., 'stopped', 'running', 'paused').
@@ -90,17 +85,17 @@ export default {
       return this.$route.params.slug
     },
 
-    // sortBy () {
-    //   const obj = {}
-    //   if (this.options.sortBy && this.options.sortBy.length) {
-    //     obj[this.options.sortBy[0]] = this.options.sortDesc[0] ? -1 : 1
-    //   }
-    //   return obj
-    // },
+    sortBy () {
+      const obj = {}
+      if (this.options.sortBy && this.options.sortBy.length) {
+        obj[this.options.sortBy[0]] = this.options.sortDesc[0] ? -1 : 1
+      }
+      return obj
+    },
 
-    // limit () {
-    //   return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
-    // },
+    limit () {
+      return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
+    },
 
     lapsParams () {
       // Return an object with a single property 'query' set to an empty object.
@@ -114,9 +109,9 @@ export default {
     }
   },
 
-  pageCount () {
-    return Math.ceil(this.laps.length / this.itemsPerPage)
-  },
+  // pageCount () {
+  //   return Math.ceil(this.laps.length / this.itemsPerPage)
+  // },
 
   // watch: {
   //   sessionId (newSessionId, oldSessionId) {
@@ -214,8 +209,6 @@ export default {
       }
 
       const sessionId = this.sessionId
-      // console.log(sessionId)
-      // console.log(this.sessionId)
 
       // Calculate the duration of the lap time by subtracting the latest lap time (if available) from the total elapsed time.
       const lapTimeDuration = this.totalElapsedTime - (this.latestLap || 0)
@@ -282,24 +275,24 @@ export default {
       await this.findLaps(this.lapsLatestQuery)
       console.log(this.findLaps)
       console.log(this.lapsLatestQuery)
-    },
-
-    getRowColor (item) {
-      if (item.time === undefined) {
-        return ''
-      }
-
-      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-
-      if (item.time === fastestLapTime) {
-        return 'green--text'
-      } else if (item.time === slowestLapTime) {
-        return 'red--text'
-      } else {
-        return ''
-      }
     }
+
+    // getRowColor (item) {
+    //   if (item.time === undefined) {
+    //     return ''
+    //   }
+
+    //   const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+    //   const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+
+    //   if (item.time === fastestLapTime) {
+    //     return 'green--text'
+    //   } else if (item.time === slowestLapTime) {
+    //     return 'red--text'
+    //   } else {
+    //     return ''
+    //   }
+    // }
   }
 }
 

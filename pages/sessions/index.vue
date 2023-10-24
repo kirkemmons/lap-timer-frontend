@@ -19,22 +19,24 @@
                   prepend-inner-icon="mdi-magnify"
                   hide-details
                   filled
-                  :loading="isPending"
+                  :loading="isFindSessionsPending"
                   rounded
                   dense
                   v-model="search"
                 )
               v-data-table.clickable(
-                :loading="isPending"
+                :loading="isFindSessionsPending"
                 :headers="headers"
                 :items="sessions"
                 class="elevation-18"
                 no-data-text="No Sessions Found"
+                :server-items-length="!isFindSessionsPending ? sessionsLatestQuery.response.total : 0"
+                :options.sync="options"
               )
                 template(#item.name="{ item: session }")
-                //- template(#item.laps="{ item: session }")
-                //-   span
-                //-     | {{ session.laps.length }} laps
+                template(#item.laps="{ item: session }")
+                  span
+                    | {{ session.laps }} laps
 
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
@@ -63,13 +65,10 @@ export default {
       search: '',
       options: {
         page: 1,
-        itemsPerPage: 200,
+        itemsPerPage: 10,
         sortBy: ['name'],
         sortDesc: [false]
-      },
-      isPending: false,
-      paginationData: {},
-      latestQuery: {}
+      }
     }
   },
 

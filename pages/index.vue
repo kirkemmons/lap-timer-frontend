@@ -38,30 +38,26 @@
           //-           :disabled="!sessionName"
           //-         ) New Session
 
-          //- v-row.justify-center
-          //-   v-col(
-          //-     cols="12"
-          //-     md="6"
-          //-   )
-          //-     h2 Create a new Car
-          //-       v-form(@submit.prevent="createCar")
-          //-         v-text-field(
-          //-           color="blue"
-          //-           v-model="carName"
-          //-           label="Car Name"
-          //-           required
-          //-         )
-          //-         v-btn(
-          //-           color="blue"
-          //-           type="submit"
-          //-           :disabled="!carName"
-          //-         ) New Car
+          v-row.justify-center
+            v-col(
+              cols="12"
+              md="6"
+            )
+              h2 Create a new Car
+                v-form(@submit.prevent="createCar")
+                  v-text-field(
+                    color="blue"
+                    v-model="carName"
+                    label="Car Name"
+                    required
+                  )
+                  v-btn(
+                    color="blue"
+                    type="submit"
+                    :disabled="!carName"
+                  ) New Car
 
-          .text-center.pa-5(
-            outlined
-            color="grey"
-            style="border: 2px dashed #ccc; width: 500px;"
-          )
+          .text-center.pa-5
             .text-h6.mb-4 Start a New Session
             v-btn.mb-6(
               depressed
