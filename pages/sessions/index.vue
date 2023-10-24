@@ -6,8 +6,8 @@
           justify="center"
         )
           v-col(
-            cols="12"
-            md="6"
+            cols="9"
+            lg="6"
           )
             v-card(
               outlined
@@ -35,9 +35,13 @@
               )
                 template(#item.name="{ item: session }")
                 template(#item.laps="{ item: session }")
-                  span
-                    | {{ session.laps }} laps
-
+                  FeathersVuexCount(
+                    v-slot="{ total }"
+                    :service="'laps'"
+                    :params="{ query: { sessionId: session._id } }"
+                  )
+                    span
+                      | {{ total }}
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
                     v-icon(color="red" size="large") mdi-trash-can-outline
@@ -45,7 +49,7 @@
                 template(v-slot:item.name="{ item: session }")
                   nuxt-link(:to="`/sessions/${session._id}`") {{ session.name }}
 
-            v-row.mt-1
+            v-row.mt-8
               v-col.text-center
                 v-btn.my-5(icon to="/")
                   v-icon.elevation-10(color="orange") mdi-arrow-left

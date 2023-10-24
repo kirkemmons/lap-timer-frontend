@@ -30,6 +30,8 @@
                 :items="cars"
                 class="elevation-18"
                 no-data-text="No Cars Found"
+                :server-items-length="!isFindCarsPending ? carsLatestQuery.response.total : 0"
+                :options.sync="options"
               )
                 template(#item.name="{ item: car }")
 
@@ -60,13 +62,10 @@ export default {
       search: '',
       options: {
         page: 1,
-        itemsPerPage: 200,
+        itemsPerPage: 10,
         sortBy: ['name'],
         sortDesc: [false]
-      },
-      isPending: false,
-      paginationData: {},
-      latestQuery: {}
+      }
     }
   },
 

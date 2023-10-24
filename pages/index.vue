@@ -19,61 +19,52 @@
     v-main
       v-container.fluid.fill-height
         v-layout.align-center.justify-center
-          //- v-row.justify-center
-          //-   v-col(
-          //-     cols="12"
-          //-     md="6"
-          //-   )
-          //-     h2 Start a New Session
-          //-       v-form(@submit.prevent="createSession")
-          //-         v-text-field(
-          //-           color="orange"
-          //-           v-model="sessionName"
-          //-           label="Session Name"
-          //-           required
-          //-         )
-          //-         v-btn(
-          //-           color="orange"
-          //-           type="submit"
-          //-           :disabled="!sessionName"
-          //-         ) New Session
+
+          v-row.justify-center
+            v-col.mt-6(
+              cols="12"
+              md="6"
+            )
+              .text-center.pa-5
+                .text-h6.mb-4 Start a New Session
+                v-btn.mb-6(
+                  depressed
+                  color="primary"
+                  @click="isAddSessionOpen = true"
+                  width="220"
+                )
+                  v-icon(left) mdi-plus
+                  | Add Session
+
+            AddSession(
+              v-if="isAddSessionOpen"
+              @input="isAddSessionOpen = false"
+              @session-created="handleSessionCreated"
+              :value="isAddSessionOpen"
+            )
 
           v-row.justify-center
             v-col(
               cols="12"
               md="6"
             )
-              h2 Create a new Car
-                v-form(@submit.prevent="createCar")
-                  v-text-field(
-                    color="blue"
-                    v-model="carName"
-                    label="Car Name"
-                    required
-                  )
-                  v-btn(
-                    color="blue"
-                    type="submit"
-                    :disabled="!carName"
-                  ) New Car
+              .text-center.pa-5
+                .text-h6.mb-4 Add a New Car
+                v-btn.mb-6(
+                  depressed
+                  color="orange"
+                  @click="isAddCarOpen = true"
+                  width="220"
+                )
+                  v-icon(left) mdi-plus
+                  | Add Car
 
-          .text-center.pa-5
-            .text-h6.mb-4 Start a New Session
-            v-btn.mb-6(
-              depressed
-              color="primary"
-              @click="isAddSessionOpen = true"
-              width="220"
+            AddCar(
+              v-if="isAddCarOpen"
+              @input="isAddCarOpen = false"
+              @session-created="handleSessionCreated"
+              :value="isAddCarOpen"
             )
-              v-icon(left) mdi-plus
-              | Add Session
-
-        AddSession(
-          v-if="isAddSessionOpen"
-          @input="isAddSessionOpen = false"
-          @session-created="handleSessionCreated"
-          :value="isAddSessionOpen"
-        )
 
       v-footer(style="background-color: #272727" app)
         span(class).white--text &copy; #{new Date().getFullYear()}
@@ -84,16 +75,19 @@
 
 import { } from 'vuex'
 import AddSession from '../components/AddSession.vue'
+import AddCar from '../components/AddCar.vue'
 
 export default {
   components: {
-    AddSession
+    AddSession,
+    AddCar
   },
   data () {
     return {
       sessionName: '',
       carName: '',
       isAddSessionOpen: false,
+      isAddCarOpen: false,
       clipped: false,
       drawer: false,
       fixed: false,
@@ -107,6 +101,11 @@ export default {
           icon: 'mdi-timelapse',
           title: 'Sessions',
           to: '/sessions'
+        },
+        {
+          icon: 'mdi-car-outline',
+          title: 'Cars',
+          to: '/cars'
         }
       ],
       miniVariant: false,
@@ -124,6 +123,11 @@ export default {
     handleSessionCreated (session) {
     // Handle the created session, if needed
       console.log('New session created:', session)
+    },
+
+    handleCarCreated (car) {
+    // Handle the created car, if needed
+      console.log('New car created:', car)
     },
 
     async createSession () {
@@ -175,8 +179,8 @@ export default {
         const createdCar = await car.create()
         console.log(createdCar)
 
-        // Navigate to the laptime slug page for the created car
-        this.$router.push(`/cars/${createdCar._id}`)
+        // Navigate to the cars index page for the created car
+        this.$router.push('/cars')
 
         // console.log('Session created successfully!')
       } catch (error) {

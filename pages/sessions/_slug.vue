@@ -22,15 +22,15 @@
               no-data-text="No laps have been recorded"
             )
               template(#item.time="{ item: lap }")
-                span {{ formatLapTime(lap.time) }}
+                span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="red" size="large") mdi-trash-can-outline
 
-            v-row.mt-5
-              v-col.text-center
-                v-btn.my-5(icon to="/sessions")
-                  v-icon.elevation-10(color="orange") mdi-arrow-left
+        v-row.mt-5
+          v-col.text-center
+            v-btn.my-5(icon to="/sessions")
+              v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
 
@@ -58,8 +58,8 @@ export default {
 
       options: {
         page: 1,
-        itemsPerPage: 100,
         sortBy: ['name'],
+        itemsPerPage: 100,
         sortDesc: [false]
       },
 
@@ -72,9 +72,7 @@ export default {
       seconds: 0, // The seconds component of the timer.
       milliseconds: 0, // The milliseconds component of the timer.
       latestLap: 0, // The timestamp of the latest lap recorded.
-      totalElapsedTime: 0, // The total elapsed time in milliseconds.
-      itemsPerPage: 10,
-      page: 1
+      totalElapsedTime: 0
     }
   },
 
@@ -108,18 +106,6 @@ export default {
       return { query }
     }
   },
-
-  // pageCount () {
-  //   return Math.ceil(this.laps.length / this.itemsPerPage)
-  // },
-
-  // watch: {
-  //   sessionId (newSessionId, oldSessionId) {
-  //     if (newSessionId !== oldSessionId) {
-  //       this.lapNumber = 1 // Reset lap number to 1 for a new session
-  //     }
-  //   }
-  // },
 
   methods: {
     // The `start` function begins or resumes the timer.
@@ -275,24 +261,24 @@ export default {
       await this.findLaps(this.lapsLatestQuery)
       console.log(this.findLaps)
       console.log(this.lapsLatestQuery)
+    },
+
+    getRowColor (item) {
+      if (item.time === undefined) {
+        return ''
+      }
+
+      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+
+      if (item.time === fastestLapTime) {
+        return 'green--text'
+      } else if (item.time === slowestLapTime) {
+        return 'red--text'
+      } else {
+        return ''
+      }
     }
-
-    // getRowColor (item) {
-    //   if (item.time === undefined) {
-    //     return ''
-    //   }
-
-    //   const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-    //   const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-
-    //   if (item.time === fastestLapTime) {
-    //     return 'green--text'
-    //   } else if (item.time === slowestLapTime) {
-    //     return 'red--text'
-    //   } else {
-    //     return ''
-    //   }
-    // }
   }
 }
 
