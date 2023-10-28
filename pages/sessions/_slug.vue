@@ -17,9 +17,10 @@
             v-data-table.mt-4(
               :headers="headers"
               :items="laps.filter(lap => lap.sessionId === sessionId)"
-              :items-per-page="itemsPerPage"
               class="elevation-18"
               no-data-text="No laps have been recorded"
+              :server-items-length="!isFindLapsPending ? lapsLatestQuery.response.time : 0"
+              :options.sync="options"
             )
               template(#item.time="{ item: lap }")
                 span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
@@ -59,7 +60,7 @@ export default {
       options: {
         page: 1,
         sortBy: ['name'],
-        itemsPerPage: 100,
+        itemsPerPage: 10,
         sortDesc: [false]
       },
 
@@ -83,14 +84,6 @@ export default {
       return this.$route.params.slug
     },
 
-    sortBy () {
-      const obj = {}
-      if (this.options.sortBy && this.options.sortBy.length) {
-        obj[this.options.sortBy[0]] = this.options.sortDesc[0] ? -1 : 1
-      }
-      return obj
-    },
-
     limit () {
       return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
     },
@@ -98,11 +91,11 @@ export default {
     lapsParams () {
       // Return an object with a single property 'query' set to an empty object.
       const query = {
-        sessionId: this.sessionId
-        // $limit: this.limit,
-        // $skip: this.options.itemsPerPage * (this.options.page - 1),
-        // $sort: this.sortBy
+        sessionId: this.sessionId,
+        $limit: this.limit,
+        $skip: this.options.itemsPerPage * (this.options.page - 1)
       }
+      console.log(query)
       return { query }
     }
   },
@@ -259,7 +252,6 @@ export default {
 
       // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
       await this.findLaps(this.lapsLatestQuery)
-      console.log(this.findLaps)
       console.log(this.lapsLatestQuery)
     },
 

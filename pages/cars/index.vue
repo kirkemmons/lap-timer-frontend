@@ -73,7 +73,6 @@ export default {
     headers () {
       return [
         { text: 'Name', align: 'left', value: 'name' },
-        { text: '# of Laps', align: 'left', value: 'laps' },
         { text: 'Remove Car', align: 'right', value: 'remove', sortable: false }
       ]
     },
