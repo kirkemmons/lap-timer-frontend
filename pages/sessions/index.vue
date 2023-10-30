@@ -44,14 +44,14 @@
                       | {{ total }}
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
-                    v-icon(color="black" size="large") mdi-trash-can-outline
+                    v-icon(color="#666666" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: session }")
                   nuxt-link(:to="`/sessions/${session._id}`") {{ session.name }}
 
             v-row.mt-8
               v-col.text-center
-                v-btn.my-5(icon to="/")
+                v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'")
                   v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>

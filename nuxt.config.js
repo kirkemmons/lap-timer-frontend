@@ -38,7 +38,12 @@ export default {
   plugins: [
     '~/plugins/feathers-vuex',
     {
-      src: '~/plugins/confirm', mode: 'client'
+      src: '~/plugins/confirm',
+      mode: 'client'
+    },
+    {
+      src: '~/plugins/v-tooltip',
+      mode: 'client'
     }
   ],
 

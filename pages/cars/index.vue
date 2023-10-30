@@ -37,14 +37,14 @@
 
                 template(#item.remove="{ item: car }")
                   v-btn(icon @click="removeCar(car)")
-                    v-icon(color="black" size="large") mdi-trash-can-outline
+                    v-icon(color="#666666" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: car }")
                   nuxt-link(:to="`/cars/${car._id}`") {{ car.name }}
 
-            v-row.mt-1
+            v-row.mt-8
               v-col.text-center
-                v-btn.my-5(icon to="/")
+                v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'")
                   v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>

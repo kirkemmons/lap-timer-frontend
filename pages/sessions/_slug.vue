@@ -8,13 +8,13 @@
               v-card-title.justify-center.display-1 {{ time }}
               v-card-text.mt-2
                 v-list
-                  v-btn.mb-4.green--text(elevation="10" block @click="start") Start
-                  v-btn.mb-4.blue--text(elevation="10" block @click="createLap") Lap
-                  v-btn.mb-4.red--text(elevation="10" block @click="stop") Stop
-                  v-btn.orange--text(elevation="10" block @click="reset") Reset
+                  v-btn.mb-4(elevation="10" block @click="start") Start
+                  v-btn.mb-4(elevation="10" block @click="createLap") Lap
+                  v-btn.mb-4(elevation="10" block @click="stop") Stop
+                  v-btn(elevation="10" block @click="reset") Reset
         v-row(justify="center")
           v-col(cols="9" lg="6")
-            v-data-table.mt-4(
+            v-data-table.mt-4.mb-2(
               :headers="headers"
               :items="laps.filter(lap => lap.sessionId === sessionId)"
               class="elevation-18"
@@ -27,11 +27,11 @@
                 span {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
-                  v-icon(color="black" size="large") mdi-trash-can-outline
+                  v-icon(color="#666666" size="large") mdi-trash-can-outline
 
         v-row.mt-5
           v-col.text-center
-            v-btn.my-5(icon to="/sessions")
+            v-btn.my-5(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'")
               v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>

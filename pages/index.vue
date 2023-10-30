@@ -5,7 +5,7 @@
       v-list
         v-list-item(v-for="(item, i) in items" :key="i" :to="item.to" router exact)
           v-list-item-action
-            v-icon.white--text {{ item.icon }}
+            v-icon.black--text {{ item.icon }}
           v-list-item-content
             v-list-item-title.white--text {{ item.title }}
     v-app-bar(:clipped-left="clipped" fixed app style="background-color: #272727")
@@ -13,7 +13,7 @@
       v-btn.mx-1(icon @click.stop="miniVariant = !miniVariant")
         v-icon.white--text mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}
       v-spacer
-      v-btn.mx-1(icon href="https://github.com/kirkemmons" target="_blank")
+      v-btn.mx-4(icon href="https://github.com/kirkemmons" target="_blank" v-tooltip.bottom="'Github'")
         v-icon(color="orange") mdi-crown-outline
 
     v-main
@@ -197,6 +197,10 @@ export default {
 .container {
   background-color: #8c8c8c;
   max-height: fit-content;
+}
+
+.tooltip {
+  z-index: 10000;
 }
 
 </style>
