@@ -19,13 +19,13 @@
                   prepend-inner-icon="mdi-magnify"
                   hide-details
                   filled
-                  :loading="isPending"
+                  :loading="isFindCarsPending"
                   rounded
                   dense
                   v-model="search"
                 )
               v-data-table.clickable(
-                :loading="isPending"
+                :loading="isFindCarsPending"
                 :headers="headers"
                 :items="cars"
                 class="elevation-18"
@@ -37,7 +37,7 @@
 
                 template(#item.remove="{ item: car }")
                   v-btn(icon @click="removeCar(car)")
-                    v-icon(color="red" size="large") mdi-trash-can-outline
+                    v-icon(color="black" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: car }")
                   nuxt-link(:to="`/cars/${car._id}`") {{ car.name }}

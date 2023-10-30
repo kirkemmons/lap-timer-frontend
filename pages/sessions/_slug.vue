@@ -21,12 +21,13 @@
               no-data-text="No laps have been recorded"
               :server-items-length="!isFindLapsPending ? lapsLatestQuery.response.time : 0"
               :options.sync="options"
+              :item-class="getRowColor"
             )
               template(#item.time="{ item: lap }")
-                span(:class="getRowColor(lap)") {{ formatLapTime(lap.time) }}
+                span {{ formatLapTime(lap.time) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
-                  v-icon(color="red" size="large") mdi-trash-can-outline
+                  v-icon(color="black" size="large") mdi-trash-can-outline
 
         v-row.mt-5
           v-col.text-center
@@ -95,7 +96,6 @@ export default {
         $limit: this.limit,
         $skip: this.options.itemsPerPage * (this.options.page - 1)
       }
-      console.log(query)
       return { query }
     }
   },
@@ -257,16 +257,20 @@ export default {
 
     getRowColor (item) {
       if (item.time === undefined) {
-        return ''
+        return '' // Default class if time is undefined
       }
 
-      const fastestLapTime = Math.min(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
-      const slowestLapTime = Math.max(...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time))
+      const fastestLapTime = Math.min(
+        ...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time)
+      )
+      const slowestLapTime = Math.max(
+        ...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time)
+      )
 
       if (item.time === fastestLapTime) {
-        return 'green--text'
+        return 'green-row'
       } else if (item.time === slowestLapTime) {
-        return 'red--text'
+        return 'red-row'
       } else {
         return ''
       }
@@ -289,6 +293,14 @@ export default {
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+.green-row {
+  background-color: #ebfbeb
+}
+
+.red-row {
+  background-color: #f7e8e9
 }
 
 </style>

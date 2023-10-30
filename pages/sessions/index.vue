@@ -44,7 +44,7 @@
                       | {{ total }}
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
-                    v-icon(color="red" size="large") mdi-trash-can-outline
+                    v-icon(color="black" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: session }")
                   nuxt-link(:to="`/sessions/${session._id}`") {{ session.name }}
