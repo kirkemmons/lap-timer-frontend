@@ -25,6 +25,10 @@
             )
               template(#item.time="{ item: lap }")
                 span {{ formatLapTime(lap.time) }}
+              template(#item.delta="{ item: lap }")
+                span
+                  | {{ lap.delta < 0 ? '-' : '' }}
+                  | {{ formatLapTime(lap.delta) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="#666666" size="large") mdi-trash-can-outline
@@ -50,6 +54,7 @@ export default {
       headers: [
         { text: 'Lap #', align: 'left', value: 'number' },
         { text: 'Lap Time', align: 'left', value: 'time' },
+        { text: 'Delta', align: 'left', value: 'delta' },
         {
           text: 'Remove Lap',
           align: 'right',
@@ -67,14 +72,15 @@ export default {
 
       // Timer-related properties:
       timerState: 'stopped', // The state of the timer (e.g., 'stopped', 'running', 'paused').
-      time: '00:00:000', // The displayed time in HH:mm:ss:SSS format.
+      time: '00:00.000', // The displayed time in HH:mm:ss:SSS format.
       ticker: undefined, // A variable possibly used to store a timer interval ID.
       hours: 0, // The hours component of the timer.
       minutes: 0, // The minutes component of the timer.
       seconds: 0, // The seconds component of the timer.
       milliseconds: 0, // The milliseconds component of the timer.
       latestLap: 0, // The timestamp of the latest lap recorded.
-      totalElapsedTime: 0
+      totalElapsedTime: 0,
+      latestDelta: 0
     }
   },
 
@@ -139,7 +145,7 @@ export default {
       // Format the duration object to a specific time format: HH:mm:ss:SSS
       // 'HH' represents hours, 'mm' represents minutes, 'ss' represents seconds, and 'SSS' represents milliseconds.
       // The result will be a formatted string representing the lap time.
-      return lapDuration.format('mm:ss:SSS')
+      return lapDuration.format('s.SSS')
     },
 
     // The tick function increments the timer by 10 milliseconds and updates the time display.
@@ -177,7 +183,7 @@ export default {
       const ms = String(this.milliseconds).padStart(3, '0')
 
       // Set the 'time' property with the formatted time.
-      this.time = `${m}:${s}:${ms}`
+      this.time = `${m}:${s}.${ms}`
     },
 
     async createLap () {
@@ -195,14 +201,21 @@ export default {
       // Log the duration of the current lap time (for debugging purposes).
       // console.log(lapTimeDuration)
 
+      // Calculate the delta by subtracting the previous lap time from the current lap time.
+      const delta = lapTimeDuration - (this.previousLap || 0)
+
       // Assuming 'Lap' is a model from FeathersVuex API.
       // Create a new 'Lap' object with the lap time duration as 'time'.
       const { Lap } = this.$FeathersVuex.api
-      const data = { time: lapTimeDuration, sessionId }
+      const data = { time: lapTimeDuration, delta, sessionId }
       const lap = new Lap(data)
 
       // Use the 'create' method (presumably an asynchronous API call) to store the lap data.
       await lap.create()
+
+      // Update the 'previousLap' variable with the current lap time.
+      // This will be used as a reference for the next lap calculation.
+      this.previousLap = lapTimeDuration
 
       // Update the 'latestLap' variable with the current total elapsed time.
       // This will be used as a reference for the next lap calculation.
@@ -227,7 +240,7 @@ export default {
       this.timerState = 'stopped'
 
       // Reset the displayed time to '00:00:00:000'.
-      this.time = '00:00:000'
+      this.time = '00:00.000'
 
       // Reset individual time components to their initial values.
       // this.hours = 0
@@ -296,11 +309,11 @@ export default {
 }
 
 .green-row {
-  background-color: #ebfbeb
+  background-color: #E7F6E9
 }
 
 .red-row {
-  background-color: #f7e8e9
+  background-color: #f9e2e4
 }
 
 </style>
