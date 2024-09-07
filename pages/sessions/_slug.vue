@@ -19,16 +19,16 @@
               :items="laps.filter(lap => lap.sessionId === sessionId)"
               class="elevation-18"
               no-data-text="No laps have been recorded"
-              :server-items-length="!isFindLapsPending ? lapsLatestQuery.response.time : 0"
+              :server-items-length="!isFindLapsPending ? lapsLatestQuery.response.total : 0"
               :options.sync="options"
               :item-class="getRowColor"
             )
               template(#item.time="{ item: lap }")
                 span {{ formatLapTime(lap.time) }}
-              template(#item.delta="{ item: lap }")
-                span
-                  | {{ lap.delta < 0 ? '-' : '' }}
-                  | {{ formatLapTime(lap.delta) }}
+              //- template(#item.delta="{ item: lap }")
+              //-   span
+              //-     | {{ lap.delta < 0 ? '-' : '' }}
+              //-     | {{ formatLapTime(lap.delta) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="#666666" size="large") mdi-trash-can-outline
@@ -54,7 +54,7 @@ export default {
       headers: [
         { text: 'Lap #', align: 'left', value: 'number' },
         { text: 'Lap Time', align: 'left', value: 'time' },
-        { text: 'Delta', align: 'left', value: 'delta' },
+        // { text: 'Delta', align: 'left', value: 'delta' },
         {
           text: 'Remove Lap',
           align: 'right',
@@ -65,8 +65,8 @@ export default {
 
       options: {
         page: 1,
-        sortBy: ['name'],
         itemsPerPage: 10,
+        sortBy: ['number'],
         sortDesc: [false]
       },
 
@@ -79,13 +79,12 @@ export default {
       seconds: 0, // The seconds component of the timer.
       milliseconds: 0, // The milliseconds component of the timer.
       latestLap: 0, // The timestamp of the latest lap recorded.
-      totalElapsedTime: 0,
-      latestDelta: 0
+      totalElapsedTime: 0
+      // latestDelta: 0
     }
   },
 
   computed: {
-
     sessionId () {
       console.log(this.$route.params)
       return this.$route.params.slug
@@ -95,13 +94,30 @@ export default {
       return this.options.itemsPerPage !== -1 ? this.options.itemsPerPage : 999
     },
 
+    sortBy () {
+      const obj = {}
+      if (this.options.sortBy && this.options.sortBy.length) {
+        obj[this.options.sortBy[0]] = this.options.sortDesc[0] ? -1 : 1
+      }
+      return obj
+    },
+
     lapsParams () {
       // Return an object with a single property 'query' set to an empty object.
       const query = {
         sessionId: this.sessionId,
         $limit: this.limit,
-        $skip: this.options.itemsPerPage * (this.options.page - 1)
+        $skip: this.options.itemsPerPage * (this.options.page - 1),
+        $sort: this.sortBy
       }
+
+      if (this.search) {
+        query.number = {
+          $regex: this.search,
+          $options: 'gi'
+        }
+      }
+
       return { query }
     }
   },
@@ -150,37 +166,18 @@ export default {
 
     // The tick function increments the timer by 10 milliseconds and updates the time display.
     tick () {
-      // Increment milliseconds by 10 milliseconds.
-      this.milliseconds += 10
+      // Increment total elapsed time by 10 milliseconds.
+      this.totalElapsedTime += 10
 
-      // Update seconds by adding the number of seconds represented by the extra milliseconds.
-      this.seconds += Math.floor(this.milliseconds / 1000)
+      // Calculate time components from total elapsed time.
+      const minutes = Math.floor(this.totalElapsedTime / 60000)
+      const seconds = Math.floor((this.totalElapsedTime % 60000) / 1000)
+      const milliseconds = this.totalElapsedTime % 1000
 
-      // Update minutes by adding the number of minutes represented by the extra seconds.
-      this.minutes += Math.floor(this.seconds / 60)
-
-      // Update hours by adding the number of hours represented by the extra minutes.
-      this.hours += Math.floor(this.minutes / 60)
-
-      // Ensure that each time component (milliseconds, seconds, minutes, hours) remains within its valid range.
-      // For example, reset seconds to 0 when it reaches 60.
-      this.milliseconds %= 1000
-      this.seconds %= 60
-      this.minutes %= 60
-      // this.hours %= 24 // Optionally, reset hours after 24 hours
-
-      // Calculate the total elapsed time in milliseconds.
-      this.totalElapsedTime =
-      // this.hours * 60 * 60 * 1000 +
-      this.minutes * 60 * 1000 +
-      this.seconds * 1000 +
-      this.milliseconds
-
-      // Format the time components (hours, minutes, seconds, milliseconds) into a string in HH:mm:ss:SSS format.
-      // const h = String(this.hours).padStart(2, '0')
-      const m = String(this.minutes).padStart(2, '0')
-      const s = String(this.seconds).padStart(2, '0')
-      const ms = String(this.milliseconds).padStart(3, '0')
+      // Format the time components into a string in mm:ss.SSS format.
+      const m = String(minutes).padStart(2, '0')
+      const s = String(seconds).padStart(2, '0')
+      const ms = String(milliseconds).padStart(3, '0')
 
       // Set the 'time' property with the formatted time.
       this.time = `${m}:${s}.${ms}`
@@ -201,13 +198,13 @@ export default {
       // Log the duration of the current lap time (for debugging purposes).
       // console.log(lapTimeDuration)
 
-      // Calculate the delta by subtracting the previous lap time from the current lap time.
-      const delta = lapTimeDuration - (this.previousLap || 0)
+      // // Calculate the delta by subtracting the previous lap time from the current lap time, make sure to add delta to data property line.
+      // const delta = lapTimeDuration - (this.previousLap || 0)
 
       // Assuming 'Lap' is a model from FeathersVuex API.
       // Create a new 'Lap' object with the lap time duration as 'time'.
       const { Lap } = this.$FeathersVuex.api
-      const data = { time: lapTimeDuration, delta, sessionId }
+      const data = { time: lapTimeDuration, sessionId }
       const lap = new Lap(data)
 
       // Use the 'create' method (presumably an asynchronous API call) to store the lap data.
@@ -266,6 +263,10 @@ export default {
       // After successfully removing the lap record, refresh the list of laps by calling 'this.findLaps' with the latest query parameters.
       await this.findLaps(this.lapsLatestQuery)
       console.log(this.lapsLatestQuery)
+    },
+
+    async fetchLaps () {
+      await this.findLaps(this.lapsParams)
     },
 
     getRowColor (item) {
