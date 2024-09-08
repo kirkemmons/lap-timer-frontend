@@ -51,8 +51,8 @@
 
             v-row.mt-8
               v-col.text-center
-                v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'")
-                  v-icon.elevation-10(color="orange") mdi-arrow-left
+                v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'" class="custom-tooltip")
+                  v-icon.elevation-10(color="white") mdi-arrow-left
 
 </template>
 
@@ -141,6 +141,11 @@ export default {
 .container {
   margin: 0 auto;
   background-color: gray;
+}
+
+.custom-tooltip {
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 </style>

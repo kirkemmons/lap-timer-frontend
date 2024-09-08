@@ -2,9 +2,12 @@
   v-app(style="background-color: #666666")
     v-main
       v-container.fluid.fill-height
-        v-row.mt-5(justify="center")
+        v-row(justify="center")
+          v-col.text-center
+            h2.session-title {{ session ? session.name : 'Loading...' }}
+        v-row.mt-4(justify="center")
           v-col.text-center(cols="8" sm="6" md="5")
-            v-card.pt-5.pb-2.timer(elevation="18")
+            v-card.px-6.pt-5.pb-2.timer(elevation="18")
               v-card-title.justify-center.display-1 {{ time }}
               v-card-text.mt-2
                 v-list
@@ -16,7 +19,7 @@
           v-col(cols="9" lg="6")
             v-data-table.mt-4.mb-2(
               :headers="headers"
-              :items="laps.filter(lap => lap.sessionId === sessionId)"
+              :items="filteredLaps"
               class="elevation-18"
               no-data-text="No laps have been recorded"
               :server-items-length="!isFindLapsPending ? lapsLatestQuery.response.total : 0"
@@ -35,8 +38,8 @@
 
         v-row.mt-5
           v-col.text-center
-            v-btn.my-5(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'")
-              v-icon.elevation-10(color="orange") mdi-arrow-left
+            v-btn.my-5(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'" class="custom-tooltip")
+              v-icon.elevation-10(color="white") mdi-arrow-left
 
 </template>
 
@@ -46,7 +49,8 @@ import {} from 'vuex'
 import { makeFindMixin, makeGetMixin } from 'feathers-vuex'
 
 export default {
-  mixins: [makeFindMixin({ service: 'laps', watch: true }), makeGetMixin({ service: 'sessions', watch: true })],
+  mixins: [makeFindMixin({ service: 'laps', watch: true }),
+    makeGetMixin({ service: 'sessions', watch: true })],
 
   data () {
     return {
@@ -119,7 +123,16 @@ export default {
       }
 
       return { query }
+    },
+
+    filteredLaps () {
+      return this.laps.filter(lap => lap.sessionId === this.sessionId)
     }
+  },
+
+  async created () {
+    this.session = await this.$store.dispatch('sessions/get', this.sessionId)
+    await this.findLaps(this.lapsParams)
   },
 
   methods: {
@@ -217,6 +230,9 @@ export default {
       // Update the 'latestLap' variable with the current total elapsed time.
       // This will be used as a reference for the next lap calculation.
       this.latestLap = this.totalElapsedTime
+
+      // Fetch the updated laps after creating a new lap
+      await this.findLaps(this.lapsParams)
     },
 
     stop () {
@@ -265,9 +281,9 @@ export default {
       console.log(this.lapsLatestQuery)
     },
 
-    async fetchLaps () {
-      await this.findLaps(this.lapsParams)
-    },
+    // async fetchLaps () {
+    //   await this.findLaps(this.lapsParams)
+    // },
 
     getRowColor (item) {
       if (item.time === undefined) {
@@ -315,6 +331,11 @@ export default {
 
 .red-row {
   background-color: #f9e2e4
+}
+
+.session-title {
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 </style>

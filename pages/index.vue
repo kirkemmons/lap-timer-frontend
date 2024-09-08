@@ -34,7 +34,7 @@
                   width="220"
                 )
                   v-icon(left) mdi-plus
-                  | Add Session
+                  | Add Racetrack
 
             AddSession(
               v-if="isAddSessionOpen"
