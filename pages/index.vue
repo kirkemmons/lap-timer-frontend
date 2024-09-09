@@ -1,14 +1,14 @@
 <template lang="pug">
 
-  v-app(style="background-color: #666666")
-    v-navigation-drawer(v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app style="background-color: #8c8c8c")
+  v-app(style="background-color: #313537")
+    v-navigation-drawer(v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app style="background-color: #3D4245")
       v-list
         v-list-item(v-for="(item, i) in items" :key="i" :to="item.to" router exact)
           v-list-item-action
             v-icon.black--text {{ item.icon }}
           v-list-item-content
-            v-list-item-title.white--text {{ item.title }}
-    v-app-bar(:clipped-left="clipped" fixed app style="background-color: #272727")
+            v-list-item-title.text-title {{ item.title }}
+    v-app-bar(:clipped-left="clipped" fixed app style="background-color: #181A1B")
       v-app-bar-nav-icon.ml-2.white--text(@click.stop="drawer = !drawer")
       v-btn.mx-1(icon @click.stop="miniVariant = !miniVariant")
         v-icon.white--text mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}
@@ -26,14 +26,14 @@
               md="6"
             )
               .text-center.pa-5
-                .text-h6.mb-4 Start a New Session
+                .text-h6.mb-4.text-title Start a New Session
                 v-btn.mb-6(
                   depressed
                   color="primary"
                   @click="isAddSessionOpen = true"
                   width="220"
                 )
-                  v-icon(left) mdi-plus
+                  v-icon.text-title(left) mdi-plus
                   | Add Racetrack
 
             AddSession(
@@ -49,7 +49,7 @@
               md="6"
             )
               .text-center.pa-5
-                .text-h6.mb-4 Add a New Car
+                .text-h6.mb-4.text-title Add a New Car
                 v-btn.mb-6(
                   depressed
                   color="orange"
@@ -66,7 +66,7 @@
               :value="isAddCarOpen"
             )
 
-      v-footer(style="background-color: #272727" app)
+      v-footer(style="background-color: #181A1B" app)
         span(class).white--text &copy; #{new Date().getFullYear()}
 
 </template>
@@ -195,12 +195,17 @@ export default {
 <style lang="scss">
 
 .container {
-  background-color: #8c8c8c;
+  background-color: #3D4245 !important;
   max-height: fit-content;
 }
 
 .tooltip {
   z-index: 10000;
+}
+
+.text-title {
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 </style>

@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(style="background-color: #666666")
+  v-app(style="background-color: #3D4245")
     v-main
       v-container.fluid.fill-height
         v-row(justify="center")
@@ -7,17 +7,17 @@
             h2.session-title {{ session ? session.name : 'Loading...' }}
         v-row.mt-4(justify="center")
           v-col.text-center(cols="8" sm="6" md="5")
-            v-card.px-6.pt-5.pb-2.timer(elevation="18")
-              v-card-title.justify-center.display-1 {{ time }}
+            v-card.px-6.pt-5.pb-2.timer(elevation="18" style="background-color: #181A1B")
+              v-card-title.justify-center.display-1.white--text {{ time }}
               v-card-text.mt-2
-                v-list
-                  v-btn.mb-4(elevation="10" block @click="start") Start
-                  v-btn.mb-4(elevation="10" block @click="createLap") Lap
-                  v-btn.mb-4(elevation="10" block @click="stop") Stop
-                  v-btn(elevation="10" block @click="reset") Reset
+                v-list.custom-text-color(style="background-color: #181A1B")
+                  v-btn.mb-4(elevation="10" block @click="start" color="#232526") Start
+                  v-btn.mb-4(elevation="10" block @click="createLap" color="#232526") Lap
+                  v-btn.mb-4(elevation="10" block @click="stop" color="#232526") Stop
+                  v-btn(elevation="10" block @click="reset" color="#232526") Reset
         v-row(justify="center")
           v-col(cols="9" lg="6")
-            v-data-table.mt-4.mb-2(
+            v-data-table.mt-4.mb-2.custom-data-table.custom-hover.custom-text-color(
               :headers="headers"
               :items="filteredLaps"
               class="elevation-18"
@@ -34,12 +34,12 @@
               //-     | {{ formatLapTime(lap.delta) }}
               template(#item.remove="{ item: lap }")
                 v-btn(icon @click="removeLap(lap)")
-                  v-icon(color="#666666" size="large") mdi-trash-can-outline
+                  v-icon(color="white" size="large") mdi-trash-can-outline
 
         v-row.mt-5
           v-col.text-center
             v-btn.my-5(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'" class="custom-tooltip")
-              v-icon.elevation-10(color="white") mdi-arrow-left
+              v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
 
@@ -281,10 +281,6 @@ export default {
       console.log(this.lapsLatestQuery)
     },
 
-    // async fetchLaps () {
-    //   await this.findLaps(this.lapsParams)
-    // },
-
     getRowColor (item) {
       if (item.time === undefined) {
         return '' // Default class if time is undefined
@@ -314,7 +310,7 @@ export default {
 
 .container {
   margin: 0 auto;
-  background-color: gray;
+  background-color: #3D4245;
 }
 
 @media (min-width: 1020px) {
@@ -326,16 +322,39 @@ export default {
 }
 
 .green-row {
-  background-color: #E7F6E9
+  background-color: #13331F
 }
 
 .red-row {
-  background-color: #f9e2e4
+  background-color: #3C0C10
+}
+
+.custom-tooltip {
+  color: white;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 .session-title {
   color: white;
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+}
+
+.custom-data-table {
+  background-color: #181A1B !important;
+}
+
+// Added custom text color styles
+.custom-text-color {
+  color: #959494;
+}
+
+.custom-text-color * {
+  color: #959494;
+}
+
+.custom-hover .v-data-table__wrapper tbody tr:hover {
+  background-color: #2A2C2D !important; // Disable hover effect
+  // background-color: #yourColor !important; // Set a new hover color
 }
 
 </style>

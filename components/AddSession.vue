@@ -14,11 +14,11 @@
           v-model="valid"
         )
           v-card
-            v-card-title Add Session To Track Lap Times
+            v-card-title Add Racetrack To Track Lap Times
             v-card-text
               v-text-field(
                 filled
-                label="Session Name"
+                label="Track Name"
                 v-model="clone.name"
                 :rules="[rules.required, rules.max(100)]"
                 counter="100"

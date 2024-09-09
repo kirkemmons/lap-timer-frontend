@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(style="background-color: #666666")
+  v-app(style="background-color: #3D4245" class="custom-text-color")
     v-main
       v-container.fluid.fill-height
         v-row(
@@ -11,12 +11,11 @@
           )
             v-card(
               outlined
+              class="custom-card"
             )
               v-card-text
-                v-text-field.flex-shrink-1.flex-grow-0(
-                  label="Search"
+                v-text-field.flex-shrink-1.flex-grow-0.custom-search-field(
                   single-line
-                  prepend-inner-icon="mdi-magnify"
                   hide-details
                   filled
                   :loading="isFindSessionsPending"
@@ -24,7 +23,11 @@
                   dense
                   v-model="search"
                 )
-              v-data-table.clickable(
+                  template(v-slot:prepend-inner)
+                    v-icon(color="#959494") mdi-magnify
+                  template(v-slot:label)
+                    span Search
+              v-data-table.clickable.custom-data-table.custom-hover(
                 :loading="isFindSessionsPending"
                 :headers="headers"
                 :items="sessions"
@@ -32,6 +35,7 @@
                 no-data-text="No Sessions Found"
                 :server-items-length="!isFindSessionsPending ? sessionsLatestQuery.response.total : 0"
                 :options.sync="options"
+                :hover="false"
               )
                 template(#item.name="{ item: session }")
                 template(#item.laps="{ item: session }")
@@ -44,15 +48,15 @@
                       | {{ total }}
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
-                    v-icon(color="#666666" size="large") mdi-trash-can-outline
+                    v-icon(color="white" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: session }")
-                  nuxt-link(:to="`/sessions/${session._id}`") {{ session.name }}
+                  nuxt-link(:to="`/sessions/${session._id}`" class="no-underline") {{ session.name }}
 
             v-row.mt-8
               v-col.text-center
                 v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'" class="custom-tooltip")
-                  v-icon.elevation-10(color="white") mdi-arrow-left
+                  v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
 
@@ -137,10 +141,17 @@ export default {
 </script>
 
 <style lang="scss">
+.custom-text-color {
+  color: #959494;
+}
+
+.custom-text-color * {
+  color: #959494;
+}
 
 .container {
   margin: 0 auto;
-  background-color: gray;
+  background-color: #3D4245 !important;
 }
 
 .custom-tooltip {
@@ -148,4 +159,24 @@ export default {
   text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
+.custom-data-table {
+  background-color: #181A1B !important;
+}
+
+.custom-card {
+  background-color: #181A1B !important;
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+.custom-search-field .v-input__control .v-input__slot input {
+  color: white !important;
+}
+
+.custom-hover .v-data-table__wrapper tbody tr:hover {
+  background-color: #2A2C2D !important; // Disable hover effect
+  // background-color: #yourColor !important; // Set a new hover color
+}
 </style>
