@@ -6,16 +6,82 @@
 $body-font-family: 'Jost', sans-serif;
 
 .tooltip .tooltip-inner {
-  background: white;
-  color: black;
+  background: black;
+  color: white;
   border-radius: 4px;
   padding-left: 5px;
   padding-right: 5px;
-  padding-top: 2px;
-  padding-bottom: 2px;
+  padding-top: 3px;
+  padding-bottom: 3px;
   font-size: 15px;
   margin-top: 8px;
   margin-bottom: 8px;
   justify-content: center;
-  border: 1px solid black;
+  border: 1px solid white;
+}
+
+$background-color-dark: #313537;
+$background-color-darker: #181A1B;
+$background-color-darkest: #222221;
+$text-color-light: #959494;
+$text-color-white: white;
+$text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+
+.container {
+  margin: 0 auto;
+  background-color: $background-color-dark;
+}
+
+.custom-tooltip {
+  color: $text-color-white;
+  text-shadow: $text-shadow;
+}
+
+.text-title {
+  color: $text-color-white;
+  text-shadow: $text-shadow;
+}
+
+.custom-data-table {
+  background-color: $background-color-darker !important;
+}
+
+.custom-text-color {
+  color: $text-color-light;
+}
+
+.custom-text-color * {
+  color: $text-color-light;
+}
+
+.custom-row-lines .v-data-table__wrapper tbody tr {
+  position: relative;
+}
+
+.custom-row-lines .v-data-table__wrapper tbody tr::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px !important; // Adjust the height as needed
+  background-color: $background-color-darkest !important; // Change to your desired color
+}
+
+.custom-hover .v-data-table__wrapper tbody tr:hover {
+  background-color: #2A2C2D !important; // Disable hover effect
+  // background-color: #yourColor !important; // Set a new hover color
+}
+
+.lap-session-title {
+  color: $text-color-white;
+  text-shadow: $text-shadow;
+}
+
+.v-select-list {
+
+  .v-list-item {
+    background-color: $background-color-darker;
+    color: $text-color-light !important;
+  }
 }

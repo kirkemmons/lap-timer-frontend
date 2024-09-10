@@ -1,7 +1,6 @@
 <template lang="pug">
-
-  v-app(style="background-color: #313537")
-    v-navigation-drawer(v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app style="background-color: #3D4245")
+  v-app(style="background-color: #272A2C")
+    v-navigation-drawer(v-model="drawer" :mini-variant="miniVariant" :clipped="clipped" fixed app style="background-color: #313537")
       v-list
         v-list-item(v-for="(item, i) in items" :key="i" :to="item.to" router exact)
           v-list-item-action
@@ -43,28 +42,28 @@
               :value="isAddSessionOpen"
             )
 
-          v-row.justify-center
-            v-col(
-              cols="12"
-              md="6"
-            )
-              .text-center.pa-5
-                .text-h6.mb-4.text-title Add a New Car
-                v-btn.mb-6(
-                  depressed
-                  color="orange"
-                  @click="isAddCarOpen = true"
-                  width="220"
-                )
-                  v-icon(left) mdi-plus
-                  | Add Car
+          //- v-row.justify-center
+          //-   v-col(
+          //-     cols="12"
+          //-     md="6"
+          //-   )
+          //-     .text-center.pa-5
+          //-       .text-h6.mb-4.text-title Add a New Car
+          //-       v-btn.mb-6(
+          //-         depressed
+          //-         color="orange"
+          //-         @click="isAddCarOpen = true"
+          //-         width="220"
+          //-       )
+          //-         v-icon(left) mdi-plus
+          //-         | Add Car
 
-            AddCar(
-              v-if="isAddCarOpen"
-              @input="isAddCarOpen = false"
-              @session-created="handleSessionCreated"
-              :value="isAddCarOpen"
-            )
+          //-   AddCar(
+          //-     v-if="isAddCarOpen"
+          //-     @input="isAddCarOpen = false"
+          //-     @session-created="handleSessionCreated"
+          //-     :value="isAddCarOpen"
+          //-   )
 
       v-footer(style="background-color: #181A1B" app)
         span(class).white--text &copy; #{new Date().getFullYear()}
@@ -101,12 +100,12 @@ export default {
           icon: 'mdi-timelapse',
           title: 'Sessions',
           to: '/sessions'
-        },
-        {
-          icon: 'mdi-car-outline',
-          title: 'Cars',
-          to: '/cars'
         }
+        // {
+        //   icon: 'mdi-car-outline',
+        //   title: 'Cars',
+        //   to: '/cars'
+        // }
       ],
       miniVariant: false,
       right: true
@@ -193,19 +192,15 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~/assets/variables.scss';
 
 .container {
-  background-color: #3D4245 !important;
+  background-color: $background-color-dark !important;
   max-height: fit-content;
 }
 
 .tooltip {
   z-index: 10000;
-}
-
-.text-title {
-  color: white;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 </style>

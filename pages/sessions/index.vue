@@ -1,5 +1,5 @@
 <template lang="pug">
-  v-app(style="background-color: #3D4245" class="custom-text-color")
+  v-app(style="background-color: #313537" class="custom-text-color")
     v-main
       v-container.fluid.fill-height
         v-row(
@@ -27,7 +27,7 @@
                     v-icon(color="#959494") mdi-magnify
                   template(v-slot:label)
                     span Search
-              v-data-table.clickable.custom-data-table.custom-hover(
+              v-data-table.clickable.custom-data-table.custom-hover.custom-row-lines(
                 :loading="isFindSessionsPending"
                 :headers="headers"
                 :items="sessions"
@@ -48,7 +48,7 @@
                       | {{ total }}
                 template(#item.remove="{ item: session }")
                   v-btn(icon @click="removeSession(session)")
-                    v-icon(color="white" size="large") mdi-trash-can-outline
+                    v-icon(color="#B0B0B0" size="large") mdi-trash-can-outline
 
                 template(v-slot:item.name="{ item: session }")
                   nuxt-link(:to="`/sessions/${session._id}`" class="no-underline") {{ session.name }}
@@ -141,30 +141,10 @@ export default {
 </script>
 
 <style lang="scss">
-.custom-text-color {
-  color: #959494;
-}
-
-.custom-text-color * {
-  color: #959494;
-}
-
-.container {
-  margin: 0 auto;
-  background-color: #3D4245 !important;
-}
-
-.custom-tooltip {
-  color: white;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
-}
-
-.custom-data-table {
-  background-color: #181A1B !important;
-}
+@import '~/assets/variables.scss';
 
 .custom-card {
-  background-color: #181A1B !important;
+  background-color: $background-color-darker !important;
 }
 
 .no-underline {
@@ -172,11 +152,7 @@ export default {
 }
 
 .custom-search-field .v-input__control .v-input__slot input {
-  color: white !important;
+  color: $text-color-white !important;
 }
 
-.custom-hover .v-data-table__wrapper tbody tr:hover {
-  background-color: #2A2C2D !important; // Disable hover effect
-  // background-color: #yourColor !important; // Set a new hover color
-}
 </style>
