@@ -286,12 +286,12 @@ export default {
         return '' // Default class if time is undefined
       }
 
-      const fastestLapTime = Math.min(
-        ...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time)
-      )
-      const slowestLapTime = Math.max(
-        ...this.laps.filter(lap => lap.sessionId === this.sessionId).map(lap => lap.time)
-      )
+      // Use the filteredLaps computed property to get all laps for the session
+      const allLaps = this.filteredLaps // This should already filter by sessionId
+
+      // Calculate fastest and slowest lap times from all laps
+      const fastestLapTime = Math.min(...allLaps.map(lap => lap.time))
+      const slowestLapTime = Math.max(...allLaps.map(lap => lap.time))
 
       if (item.time === fastestLapTime) {
         return 'green-row'

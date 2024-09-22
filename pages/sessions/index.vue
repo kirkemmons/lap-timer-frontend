@@ -125,6 +125,19 @@ export default {
     }
   },
 
+  watch: {
+    options: {
+      handler () {
+        this.findSessions(this.sessionsParams) // Fetch sessions with updated params
+      },
+      deep: true
+    },
+    search (newSearch) {
+      this.options.page = 1 // Reset to first page on new search
+      this.findSessions(this.sessionsParams) // Fetch sessions with updated search
+    }
+  },
+
   methods: {
 
     async removeSession (session) {

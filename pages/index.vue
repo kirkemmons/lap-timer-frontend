@@ -25,6 +25,7 @@
               md="6"
             )
               .text-center.pa-5
+                .text-h2.mb-6.text-title Lap Timer
                 .text-h6.mb-4.text-title Start a New Session
                 v-btn.mb-6(
                   depressed
@@ -150,7 +151,7 @@ export default {
         console.log(createdSession)
 
         // Navigate to the laptime slug page for the created session
-        this.$router.push(`/sessions/${createdSession._id}`)
+        // this.$router.push(`/sessions/${createdSession._id}`)
 
         // console.log('Session created successfully!')
       } catch (error) {

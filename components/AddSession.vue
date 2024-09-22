@@ -83,8 +83,8 @@ export default {
         this.$emit('session-created', clone)
         console.log(clone)
 
-        // Navigate to the session slug page for the created session
-        this.$router.push(`/sessions/${clone._id}`)
+        // Navigate to the sessions index page after creating the session
+        this.$router.push('/sessions')
       } catch (error) {
         console.error(error)
       }
