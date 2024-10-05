@@ -1,7 +1,7 @@
 <template lang="pug">
   v-app(style="background-color: #313537")
     v-main
-      v-container.fluid.fill-height
+      v-container.fluid.fill-height.mt-6
         v-row(justify="center")
           v-col.text-center
             h2.lap-session-title {{ session ? session.name : 'Loading...' }}
@@ -17,7 +17,7 @@
                   v-btn(elevation="10" block @click="reset" color="#232526") Reset
         v-row(justify="center")
           v-col(cols="9" lg="6")
-            v-data-table.mt-4.mb-2.custom-data-table.custom-hover.custom-text-color.custom-row-lines(
+            v-data-table.mt-4.custom-data-table.custom-hover.custom-text-color.custom-row-lines(
               :headers="headers"
               :items="filteredLaps"
               class="elevation-18"
@@ -36,9 +36,9 @@
                 v-btn(icon @click="removeLap(lap)")
                   v-icon(color="#B0B0B0" size="large") mdi-trash-can-outline
 
-        v-row.mt-5
+        v-row.mb-3
           v-col.text-center
-            v-btn.my-5(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'" class="custom-tooltip")
+            v-btn(icon to="/sessions" v-tooltip.bottom="'Back to Sessions Page'" class="custom-tooltip")
               v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
@@ -171,10 +171,8 @@ export default {
       // It parses the 'time' value, which is in milliseconds, into a duration object.
       const lapDuration = this.$dayjs.duration(time, 'milliseconds')
 
-      // Format the duration object to a specific time format: HH:mm:ss:SSS
-      // 'HH' represents hours, 'mm' represents minutes, 'ss' represents seconds, and 'SSS' represents milliseconds.
-      // The result will be a formatted string representing the lap time.
-      return lapDuration.format('s.SSS')
+      // Format the duration object to a specific time format: mm:ss.SSS
+      return lapDuration.format('m:ss.SSS') // Changed to include minutes
     },
 
     // The tick function increments the timer by 10 milliseconds and updates the time display.

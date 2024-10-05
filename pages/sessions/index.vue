@@ -1,7 +1,7 @@
 <template lang="pug">
   v-app(style="background-color: #313537" class="custom-text-color")
     v-main
-      v-container.fluid.fill-height
+      v-container.fluid.fill-height.mt-10
         v-row(
           justify="center"
         )
@@ -53,9 +53,9 @@
                 template(v-slot:item.name="{ item: session }")
                   nuxt-link(:to="`/sessions/${session._id}`" class="no-underline") {{ session.name }}
 
-            v-row.mt-8
+            v-row.mt-3
               v-col.text-center
-                v-btn.my-5(icon to="/" v-tooltip.bottom="'Back to Home Page'" class="custom-tooltip")
+                v-btn(icon to="/" v-tooltip.bottom="'Back to Home Page'" class="custom-tooltip")
                   v-icon.elevation-10(color="orange") mdi-arrow-left
 
 </template>
